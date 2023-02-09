@@ -47,7 +47,8 @@ INSTALLED_APPS = [
 
     'users',
     'reports',
-    'datacenter'
+    'datacenter',
+    'django_admin_listfilter_dropdown'
 ]
 
 AUTH_USER_MODEL = "users.User"

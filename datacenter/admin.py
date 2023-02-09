@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from django_admin_listfilter_dropdown.filters import ChoiceDropdownFilter
+
 from datacenter.models import EducationProgram, DisabilityType, Citizen, \
                               Group, Event, EventType, Competence, Project
 
@@ -22,6 +24,9 @@ class CitizenAdmin(admin.ModelAdmin):
         'email',
         'phone_number',
         'education_type'
+    )
+    list_filter = (
+        ('education_type', ChoiceDropdownFilter),
     )
 
 
