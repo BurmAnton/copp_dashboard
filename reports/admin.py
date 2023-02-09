@@ -39,7 +39,7 @@ class TagAdmin(admin.ModelAdmin):
         ('tag_type', ChoiceDropdownFilter),
     )
 
-    filter_horizontal = ("programs", "group", "event")
+    filter_horizontal = ("programs", "groups", "events")
 
 
 @admin.register(TimeInterval)

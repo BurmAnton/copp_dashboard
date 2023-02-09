@@ -27,8 +27,8 @@ class Tag(models.Model):
     tag_type = models.CharField("Тип тега", max_length=4, choices=TAG_TYPES, default='ALL', null=False, blank=False)
 
     programs = models.ManyToManyField(EducationProgram, verbose_name="Программы", related_name="tags", blank=True)
-    group = models.ManyToManyField(Group, verbose_name="Группы", related_name="tags", blank=True)
-    event = models.ManyToManyField(Event, verbose_name="Мероприятия", related_name="tags", blank=True)
+    groups = models.ManyToManyField(Group, verbose_name="Группы", related_name="tags", blank=True)
+    events = models.ManyToManyField(Event, verbose_name="Мероприятия", related_name="tags", blank=True)
     
     def __str__(self):
         return f'{self.name} ({self.get_tag_type_display()})'
