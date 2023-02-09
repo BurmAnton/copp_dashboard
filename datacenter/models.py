@@ -151,8 +151,8 @@ class Event(models.Model):
     notes = models.TextField("Примечания", blank=True, null=True)
     
     class Meta:
-        verbose_name = "Тип мероприятия"
-        verbose_name_plural = "Типы мероприятий"
+        verbose_name = "Мероприятие"
+        verbose_name_plural = "Мероприятия"
 
     def __str__(self):
         return  f"{self.name}"
