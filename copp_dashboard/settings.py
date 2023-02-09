@@ -38,15 +38,21 @@ ALLOWED_HOSTS = ['127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'reports',
-    'datacenter',
-    'django.contrib.admin',
+    'copp_dashboard.apps.MyAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'users',
+    'reports',
+    'datacenter'
 ]
+
+AUTH_USER_MODEL = "users.User"
+AUTH_GROUP_MODEL = 'users.Group'
+AUTH_PERMISSION_MODEL = 'users.Permission'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
