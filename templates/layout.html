@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="ru">
     <head>
-        <title>{% block title %}{% endblock %}</title>
+        <title>{% block title %}{{page_name}}{% endblock %}</title>
         
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" type="image/png" href="{% static 'admin/favicon.png' %}"/>
@@ -80,7 +80,7 @@
         </div>
         <footer class="wrap">
                 <div class="footer-logo">
-                    <img src="{% static 'schedule/img/footer-logo.svg' %}" alt="logo">
+                    <img src="{% static 'layout/img/footer-logo.svg' %}" alt="logo">
                 </div>
                 <div class="footer-contacts">
                     <div class="footer-address"> 
