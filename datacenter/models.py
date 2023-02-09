@@ -54,18 +54,6 @@ class Citizen(models.Model):
         return f'{self.last_name} {self.first_name}'
 
 
-class EventType(models.Model):
-    name = models.CharField("Тип мероприятия", max_length=100)
-    description = models.CharField("Описание", max_length=300, blank=True, null=True)
-    
-    class Meta:
-        verbose_name = "Тип мероприятия"
-        verbose_name_plural = "Типы мероприятий"
-
-    def __str__(self):
-        return  f"{self.name}"
-
-
 class Competence(models.Model):
     name = models.CharField("Название компетенции", max_length=200)
     
@@ -137,6 +125,18 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.get_project_type_display()})"
+
+
+class EventType(models.Model):
+    name = models.CharField("Тип мероприятия", max_length=100)
+    description = models.CharField("Описание", max_length=300, blank=True, null=True)
+    
+    class Meta:
+        verbose_name = "Тип мероприятия"
+        verbose_name_plural = "Типы мероприятий"
+
+    def __str__(self):
+        return  f"{self.name}"
 
 
 class Event(models.Model):
