@@ -141,7 +141,7 @@ class EventType(models.Model):
 
 class Event(models.Model):
     name = models.CharField("Название мероприятия", max_length=250)
-    event_type = models.ForeignKey(EventType, verbose_name="Описание", on_delete=CASCADE, blank=True, null=True)
+    event_type = models.ForeignKey(EventType, verbose_name="Тип меропрития", on_delete=CASCADE, blank=True, null=True)
     project = models.ForeignKey(Project, verbose_name="Проект", on_delete=CASCADE, related_name='events', blank=True, null=True)
     
     start_date = models.DateField("Дата начала", null=False, blank=False)
