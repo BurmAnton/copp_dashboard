@@ -10,7 +10,158 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Мероприятия</h1>
+    <div class="modal fade add-event-modal" id="AddEventModal" tabindex="-1" aria-labelledby="AddEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddEventModalLabel">{{event.name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'events_page' %}" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="name" placeholder="Название мероприятия" required>
+                            <label for="name">Название мероприятия</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {% if event.event_link != None %}
+                                <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию">
+                            {% else %}
+                                <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию">
+                            {% endif %}
+                            <label for="name">Ссылка на публикацию</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="event_type" class="form-label">Тип мероприятия</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="event_type" required>
+                                {% for event_type in event_types %}
+                                    <option value="{{event_type.id}}">{{event_type.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="project" class="form-label">Проект</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="project" required>
+                                {% for project in projects %}
+                                    <option value="{{project.id}}">{{project.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Теги</label>
+                            <select class="selectpicker" multiple data-width="100%" data-live-search="true" name="tags">
+                                {% for tag in tags %}
+                                    <option value="{{tag.id}}">{{tag.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="start_date" placeholder="Дата начала" aria-label="Дата" required>
+                            <label for="start_date" class="form-label">Дата начала</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="end_date" placeholder="Дата окончания" aria-label="Дата" required>
+                            <label for="end_date" class="form-label">Дата окончания</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control notes" style="height: 100px" name="notes"></textarea>
+                            <label for="notes" class="form-label">Примечания</label>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" name="add-event">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for event in events %}
+        <div class="modal fade event-modal" id="EventModal{{event.id}}" tabindex="-1" aria-labelledby="EventModal{{event.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EventModal{{event.id}}Label">{{event.name}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'events_page' %}" method="post">
+                            <input type="input" class="form-control" name="id" value="{{event.id}}" style="display: none;"  required>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="name" placeholder="Название мероприятия" value="{{event.name}}" required>
+                                <label for="name">Название мероприятия</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                {% if event.event_link != None %}
+                                    <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию" value="{{event.event_link}}">
+                                {% else %}
+                                    <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию">
+                                {% endif %}
+                                <label for="name">Ссылка на публикацию</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="event_type" class="form-label">Тип мероприятия</label>
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="event_type" required>
+                                    <option selected value="{{event.event_type.id}}">{{event.event_type.name}}</option>
+                                    {% for event_type in event_types %}
+                                        {% if event_type.id != event.event_type.id %}
+                                            <option value="{{event_type.id}}">{{event_type.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="project" class="form-label">Проект</label>
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="project" required>
+                                    <option selected value="{{event.project.id}}">{{event.project.name}}</option>
+                                    {% for project in projects %}
+                                        {% if project.id != event.project.id %}
+                                            <option value="{{project.id}}">{{project.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Теги</label>
+                                <select class="selectpicker" multiple data-width="100%" data-live-search="true" name="tags">
+                                    {% for tag in tags %}
+                                        {% if tag in event.tags.all %}
+                                            <option value="{{tag.id}}" selected>{{tag.name}}</option>
+                                        {% else %}
+                                            <option value="{{tag.id}}">{{tag.name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="start_date" value="{{event.start_date.isoformat}}" placeholder="Дата начала" aria-label="Дата" required>
+                                <label for="start_date" class="form-label">Дата начала</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="end_date" value="{{event.end_date.isoformat}}" placeholder="Дата окончания" aria-label="Дата" required>
+                                <label for="end_date" class="form-label">Дата окончания</label>
+                            </div>
+                            <div class="form-floating">
+                                <textarea class="form-control notes" style="height: 100px" name="notes">{{event.notes}}</textarea>
+                                <label for="notes" class="form-label">Примечания</label>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" name="edit-event">Сохранить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <div class="header">
+        <h1>Мероприятия</h1>
+        <a data-bs-toggle="modal" data-bs-target="#AddEventModal" class="btn btn-success">Добавить мероприятие</a>
+    </div>
     <div class="events-list row row-cols-3 row-cols-md-3 g-4">
         {% for event in events %}
             <div class="col">
@@ -34,7 +185,7 @@
                         </p>
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="btn btn-primary">Изменить</a>
+                        <a data-bs-toggle="modal" data-bs-target="#EventModal{{event.id}}" class="btn btn-primary">Изменить</a>
                     </div>
                 </div>
             </div>
