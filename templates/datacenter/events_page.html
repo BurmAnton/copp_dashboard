@@ -179,6 +179,56 @@
             </div>
         {% endif %}
     </div>
+    <div class="filter">
+        <h2>Фильтр</h2>
+        <form action="{% url 'events_page' %}" method="post">
+            <div class="form-floating mb-3 event-type-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="event_types" multiple>
+                    {% for event_type in event_types %}
+                        {% if event_type.id in event_filter.0 %}
+                            <option selected value="{{event_type.id}}">{{event_type.name}}</option>
+                        {% else %}
+                            <option value="{{event_type.id}}">{{event_type.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="event_type" class="form-label">Тип мероприятий</label>
+            </div>
+            <div class="form-floating mb-3 project-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="projects" multiple>
+                    {% for project in projects %}
+                        {% if project.id in event_filter.1 %}
+                            <option selected value="{{project.id}}">{{project.name}}</option>
+                        {% else %}
+                            <option value="{{project.id}}">{{project.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="projects" class="form-label">Проекты</label>
+            </div>
+            <div class="form-floating mb-3 tag-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="tags" multiple>
+                    {% for tag in tags %}
+                        {% if tag.id in event_filter.2 %}
+                            <option selected value="{{tag.id}}">{{tag.name}}</option>
+                            {% else %}
+                            <option value="{{tag.id}}">{{tag.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="tags" class="form-label">Теги</label>
+            </div>
+            <div class="form-floating mb-3 start-date-filter">
+                <input type="date" class="form-control" name="start_date" value="{{event_filter.3}}"  placeholder="Дата начала" aria-label="Дата">
+                <label for="start_date" class="form-label">Дата начала</label>
+            </div>
+            <div class="form-floating mb-3 end-date-filter">
+                <input type="date" class="form-control" name="end_date" value="{{event_filter.4}}" placeholder="Дата окончания" aria-label="Дата">
+                <label for="end_date" class="form-label">Дата окончания</label>
+            </div>
+            <button type="submit" class="btn btn-primary" name="filter-events">Применить</button>
+        </form>
+    </div>
     <div class="events-list row row-cols-3 row-cols-md-3 g-4">
         {% for event in events %}
             <div class="col">

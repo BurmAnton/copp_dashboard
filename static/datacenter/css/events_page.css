@@ -2,6 +2,22 @@
   flex-direction: column;
   background-color: #F2F2F2;
 }
+.body .filter-selectpicker {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+}
+.body .filter-selectpicker .dropdown-toggle {
+  height: 51px !important;
+  background-color: white !important;
+}
+.body .filter-selectpicker .filter-option-inner-inner {
+  margin-top: 16px;
+}
+.body .filter-selectpicker label {
+  padding-top: 11px !important;
+  opacity: 0.65;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
 
 .header {
   display: inline-grid;
@@ -22,6 +38,13 @@
   margin-right: 6px;
 }
 
+.event-modal .modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
 .message {
   width: 960px;
   margin: auto;
@@ -30,11 +53,52 @@
   text-align: center;
 }
 
-.event-modal .modal-footer {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row-reverse;
-  justify-content: space-between;
+.filter {
+  width: 960px;
+  margin: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.15);
+  padding: 10px 15px 30px 15px;
+}
+.filter h2 {
+  text-align: center;
+}
+.filter .form-control {
+  height: 55px;
+}
+.filter form {
+  display: inline-grid;
+  grid-template-columns: 300px 15px 300px 15px 300px;
+}
+.filter form .event-type-filter {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+.filter form .project-filter {
+  grid-column-start: 3;
+  grid-row-start: 1;
+}
+.filter form .tag-filter {
+  grid-column-start: 5;
+  grid-column-end: 5;
+  grid-row-start: 1;
+}
+.filter form .start-date-filter {
+  grid-column-start: 1;
+  grid-row-start: 2;
+  margin-bottom: 0 !important;
+}
+.filter form .end-date-filter {
+  grid-column-start: 3;
+  grid-row-start: 2;
+  margin-bottom: 0 !important;
+}
+.filter form .btn {
+  grid-column-start: 5;
+  grid-row-start: 2;
 }
 
 .events-list {
@@ -44,16 +108,21 @@
   width: -moz-fit-content;
   width: fit-content;
   justify-content: left;
+  -moz-column-gap: 15px;
+       column-gap: 15px;
   width: 960px;
 }
 .events-list .col {
-  width: 320px;
+  width: 310px;
+  padding-left: 0;
+  padding-right: 0;
 }
 .events-list .col .event-card {
   height: -moz-fit-content;
   height: fit-content;
   min-height: 250px;
   border: 0;
+  border-radius: 12px;
   box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.15);
 }
 .events-list .col .event-card b {

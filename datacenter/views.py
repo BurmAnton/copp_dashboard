@@ -18,7 +18,7 @@ def events_page(request):
             event = get_object_or_404(Event, id=event_id)
             event.delete()
             message = ["deleted", event]
-        else:
+        elif 'edit-event' in request.POST or 'add-event' in request.POST:
             name = request.POST["name"]
             event_link = request.POST["event_link"]
             event_type_id = request.POST["event_type"]
@@ -57,6 +57,35 @@ def events_page(request):
                 event.tags.add(*tags)
                 message = ["added", event]
     events = Event.objects.all()
+    event_filter = None
+    if request.method == 'POST' and 'filter-events' in request.POST:
+        event_filter = []
+        event_types = request.POST.getlist("event_types")
+        event_filter.append(list(map(int,event_types)))
+        if len(event_types) != 0: events = events.filter(
+            event_type__in=event_types
+        )
+        projects = request.POST.getlist("projects")
+        event_filter.append(list(map(int, projects)))
+        if len(projects) != 0: events = events.filter(project__in=projects)
+        tags = request.POST.getlist("tags")
+        event_filter.append(list(map(int,tags)))
+        if len(tags) != 0: events = events.filter(tags__in=tags)
+        start_date = request.POST["start_date"]
+        
+        if start_date != '': 
+            events = events.filter(
+                start_date=datetime.strptime(start_date,"%Y-%m-%d")
+            )
+            event_filter.append(datetime.strptime(start_date,"%Y-%m-%d").strftime("%Y-%m-%d"))
+        else:
+            event_filter.append('')
+        end_date = request.POST["end_date"]
+        if end_date != '': 
+            events = events.filter(
+                end_date=datetime.strptime(end_date,"%Y-%m-%d")
+            )
+            event_filter.append(datetime.strptime(end_date,"%Y-%m-%d").strftime("%Y-%m-%d"))
     event_types = EventType.objects.all()
     projects = Project.objects.all()
     tags = Tag.objects.all()
@@ -66,6 +95,7 @@ def events_page(request):
         "event_types": event_types,
         "projects": projects,
         "tags": tags,
+        "event_filter": event_filter,
         "message": message,
         "page_name": "Мероприятия | ЦОПП СО"
     })
