@@ -148,10 +148,12 @@
                             </div>
                     </div>
                     <div class="modal-footer">
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" name="edit-event">Сохранить</button>
-                            </form>
-                        </div>
+                        <button type="submit" class="btn btn-primary" name="edit-event">Сохранить</button>
+                        </form>
+                        <form action="{% url 'events_page' %}" method="post">
+                            <input type="input" class="form-control" name="id" value="{{event.id}}" style="display: none;"  required>
+                            <button type="submit" class="btn btn-danger" name="delete-event">Удалить</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -161,6 +163,21 @@
     <div class="header">
         <h1>Мероприятия</h1>
         <a data-bs-toggle="modal" data-bs-target="#AddEventModal" class="btn btn-success">Добавить мероприятие</a>
+    </div>
+    <div class="message">
+        {% if message.0 == "added" %}
+            <div class="alert alert-success" role="alert">
+                Мероприятие '{{message.1.name}}' добавлено!
+            </div>
+        {% elif message.0 == "changed" %}
+            <div class="alert alert-primary" role="alert">
+                Мероприятие '{{message.1.name}}' изменено!
+            </div>
+        {% elif message.0 == "deleted" %}
+            <div class="alert alert-danger" role="alert">
+                Мероприятие '{{message.1.name}}' удалено!
+            </div>
+        {% endif %}
     </div>
     <div class="events-list row row-cols-3 row-cols-md-3 g-4">
         {% for event in events %}
