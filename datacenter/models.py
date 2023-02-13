@@ -150,7 +150,7 @@ class Event(models.Model):
     event_link = models.CharField("Ссылка на публикацию", max_length=200, blank=True, null=True)
     notes = models.TextField("Примечания", blank=True, null=True)
 
-    participants = models.ManyToManyField(Citizen, verbose_name="Участники", blank=True)
+    participants = models.ManyToManyField(Citizen, related_name='events', verbose_name="Участники", blank=True)
     
     class Meta:
         verbose_name = "Мероприятие"
