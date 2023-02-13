@@ -131,12 +131,15 @@
 .events-list .col .event-card .card-header {
   font-size: 20px;
   background-color: white;
+  text-align: center;
 }
 .events-list .col .event-card .card-text {
   margin-top: 10px;
 }
 .events-list .col .event-card .card-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   background-color: white;
+  -moz-column-gap: 15px;
+       column-gap: 15px;
 }/*# sourceMappingURL=events_page.css.map */
