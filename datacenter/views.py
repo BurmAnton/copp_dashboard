@@ -151,6 +151,11 @@ def event_reg(request, event_id):
                 citizen.is_employed = True
             citizen.save()
             event.participants.add(citizen)
+        elif 'delete-participant' in request.POST:
+            citizen=get_object_or_404(Citizen, id=request.POST["id"])
+            event.participants.remove(citizen)
+            event.save()
+            message = ["citizen_deleted", citizen]
     event_types = EventType.objects.all()
     projects = Project.objects.all()
     tags = Tag.objects.all()

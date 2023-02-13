@@ -66,6 +66,29 @@
   justify-content: space-between;
   margin-bottom: 15px;
 }
+.participants-list .participants-list-header h2 {
+  white-space: nowrap;
+  display: flex;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.participants-list .participants-list-header .edit-icon {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+.participants-list .participants-list-header .edit-icon img {
+  width: 22px;
+  height: auto;
+  margin-left: 10px;
+  border-radius: 50px;
+}
+.participants-list .participants-list-header .edit-icon img:hover {
+  background: #F2F2F2;
+}
+.participants-list .participants-list-header .clicked img {
+  background: #F2F2F2;
+}
 .participants-list .table th {
   color: #394959;
   font-weight: 400 !important;
