@@ -42,7 +42,7 @@ class Citizen(models.Model):
     is_employed = models.BooleanField("Занятость в момент регистрации", default=False)
     is_employed_after = models.BooleanField("Занятость после обучения", default=False)
     
-    disability_type = models.ForeignKey(DisabilityType, verbose_name="ОВЗ", on_delete=DO_NOTHING, blank=True, null=True)
+    disability_type = models.ManyToManyField(DisabilityType, verbose_name="ОВЗ", related_name='citizens', blank=True)
 
     class Meta:
         verbose_name = "Гражданин"
