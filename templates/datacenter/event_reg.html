@@ -226,54 +226,59 @@
             </h2>
             <a data-bs-toggle="modal" data-bs-target="#AddCitizenModal" class="btn btn-sm btn-success">Добавить участника</a>
         </div>
-        <table class="table">
-            <tr> 
-                <th scope="col">Фамилия</th>
-                <th scope="col">Имя</th>
-                <th scope="col">Отчество</th>
-                <th scope="col">Email</th>
-                <th scope="col">Номер телефона</th>
-                <th scope="col" style="display: none;" class="delete-participant">Удалить?</th>
-            </tr>
-            {% for participant in event.participants.all %}
-                <div class="modal fade delete-participant-modal" id="DeleteParticipant{{participant.id}}Modal" tabindex="-1" aria-labelledby="DeleteParticipant{{participant.id}}Label" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="DeleteParticipant{{participant.id}}Label">Удаление участника</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{% url 'event_reg' event.id %}" method="post">
-                                    <input type="input" class="form-control" name="id" value="{{participant.id}}" style="display: none;" required>
-                                    <p>
-                                        Вы действительно хотите удалить участника '{{participant}}'?
-                                    </p>
-                            </div>
-                            <div class="modal-footer">
-                                    <button type="submit" class="btn btn-danger" name="delete-participant">Удалить</button>
-                                </form>
+        {% if event.participants.all.count != 0 %}
+            <table class="table">
+                <tr> 
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Отчество</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Номер телефона</th>
+                    <th scope="col" style="display: none;" class="delete-participant">Удалить?</th>
+                </tr>
+                {% for participant in event.participants.all %}
+                    <div class="modal fade delete-participant-modal" id="DeleteParticipant{{participant.id}}Modal" tabindex="-1" aria-labelledby="DeleteParticipant{{participant.id}}Label" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="DeleteParticipant{{participant.id}}Label">Удаление участника</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{% url 'event_reg' event.id %}" method="post">
+                                        <input type="input" class="form-control" name="id" value="{{participant.id}}" style="display: none;" required>
+                                        <p>
+                                            Вы действительно хотите удалить участника '{{participant}}'?
+                                        </p>
+                                </div>
+                                <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger" name="delete-participant">Удалить</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <tr>
-                    <td scope="row" class="nowrap">{{participant.last_name}}</td>
-                    <td scope="row" class="nowrap">{{participant.first_name}}</td>
-                    <td scope="row" class="nowrap">
-                        {% if participant.middle_name != None %}
-                            {{participant.middle_name}}
-                        {% endif %}
-                    </td>
-                    <td scope="row" class="nowrap">{{participant.email}}</td>
-                    <td scope="row" class="nowrap">{{participant.phone_number}}</td>
-                    <td scope="row" style="display: none;" class="nowrap delete-participant">
-                        <a data-bs-toggle="modal" data-bs-target="#DeleteParticipant{{participant.id}}Modal" class="btn btn-sm btn-danger">
-                            удалить участника
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
+                    <tr>
+                        <td scope="row" class="nowrap">{{participant.last_name}}</td>
+                        <td scope="row" class="nowrap">{{participant.first_name}}</td>
+                        <td scope="row" class="nowrap">
+                            {% if participant.middle_name != None %}
+                                {{participant.middle_name}}
+                            {% endif %}
+                        </td>
+                        <td scope="row" class="nowrap">{{participant.email}}</td>
+                        <td scope="row" class="nowrap">{{participant.phone_number}}</td>
+                        <td scope="row" style="display: none;" class="nowrap delete-participant">
+                            <a data-bs-toggle="modal" data-bs-target="#DeleteParticipant{{participant.id}}Modal" class="btn btn-sm btn-danger">
+                                удалить участника
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+                <div class="zero-participants">Пока на это мероприятие не записано ни одного участника.</div>
+        {% endif %}
+        
     </div>
 {% endblock %}
