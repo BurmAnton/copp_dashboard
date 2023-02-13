@@ -1,0 +1,246 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}{{page_name}}{% endblock %}
+
+{% block style %}
+    <link href="{% static 'datacenter/css/event_reg.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade add-citizen-modal" id="AddCitizenModal" tabindex="-1" aria-labelledby="AddCitizenModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddCitizenModalLabel">Добавить участника</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'event_reg' event.id %}" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="snils" placeholder="СНИЛС" required>
+                            <label for="name">СНИЛС</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="last_name" placeholder="Фамилия" required>
+                            <label for="name">Фамилия</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="first_name" placeholder="Имя" required>
+                            <label for="name">Имя</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="middle_name" placeholder="Отчество">
+                            <label for="name">Отчество</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="phone" placeholder="Телефон">
+                            <label for="name">Телефон</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" name="email" placeholder="Email">
+                            <label for="name">Email</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="birthday" placeholder="Дата рождения" aria-label="Дата рождения">
+                            <label for="birthday" class="form-label">Дата рождения</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sex" class="form-label">Пол</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="sex" required>
+                                <option value="M">Мужской</option>
+                                <option value="F">Женский</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="event_type" class="form-label">Образование</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="education_type" required>
+                                <option value="SPVO">Закончил СПО/ВО</option>
+                                <option value="STDN">Студент ВО/СПО</option>
+                                <option value="SCHL">Ученик 6-11 классов</option>
+                                <option value="OTHR">Другой</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="event_type" class="form-label">ОВЗ</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="disability">
+                                {% for disability in disabilities %}
+                                    <option value="{{disability.id}}">{{disability.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="is_russian_citizen" type="checkbox" checked>
+                            <label for="is_russian_citizen" class="form-check-label">Гражданин РФ</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="is_employed" type="checkbox">
+                            <label for="is_employed" class="form-check-label">Трудоустроен</label>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" name="add-participant">Сохранить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade event-modal" id="EventModal{{event.id}}" tabindex="-1" aria-labelledby="EventModal{{event.id}}Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EventModal{{event.id}}Label">{{event.name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'event_reg' event.id %}" method="post">
+                        <input type="input" class="form-control" name="id" value="{{event.id}}" style="display: none;"  required>
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="name" placeholder="Название мероприятия" value="{{event.name}}" required>
+                            <label for="name">Название мероприятия</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            {% if event.event_link != None %}
+                                <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию" value="{{event.event_link}}">
+                            {% else %}
+                                <input type="input" class="form-control" name="event_link" placeholder="Ссылка на публикацию">
+                            {% endif %}
+                            <label for="name">Ссылка на публикацию</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="event_type" class="form-label">Тип мероприятия</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="event_type" required>
+                                <option selected value="{{event.event_type.id}}">{{event.event_type.name}}</option>
+                                {% for event_type in event_types %}
+                                    {% if event_type.id != event.event_type.id %}
+                                        <option value="{{event_type.id}}">{{event_type.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="project" class="form-label">Проект</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="project" required>
+                                <option selected value="{{event.project.id}}">{{event.project.name}}</option>
+                                {% for project in projects %}
+                                    {% if project.id != event.project.id %}
+                                        <option value="{{project.id}}">{{project.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Теги</label>
+                            <select class="selectpicker" multiple data-width="100%" data-live-search="true" name="tags">
+                                {% for tag in tags %}
+                                    {% if tag in event.tags.all %}
+                                        <option value="{{tag.id}}" selected>{{tag.name}}</option>
+                                    {% else %}
+                                        <option value="{{tag.id}}">{{tag.name}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="start_date" value="{{event.start_date.isoformat}}" placeholder="Дата начала" aria-label="Дата" required>
+                            <label for="start_date" class="form-label">Дата начала</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="end_date" value="{{event.end_date.isoformat}}" placeholder="Дата окончания" aria-label="Дата" required>
+                            <label for="end_date" class="form-label">Дата окончания</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control notes" style="height: 100px" name="notes">{{event.notes}}</textarea>
+                            <label for="notes" class="form-label">Примечания</label>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="edit-event">Сохранить</button>
+                    </form>
+                    <form action="{% url 'event_reg' event.id %}" method="post">
+                        <input type="input" class="form-control" name="id" value="{{event.id}}" style="display: none;"  required>
+                        <button type="submit" class="btn btn-danger" name="delete-event">Удалить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card event-card">
+        <div class="card-header">
+            {{event.name}}
+            <a data-bs-toggle="modal" data-bs-target="#EventModal{{event.id}}" class="btn btn-sm btn-primary">Изменить</a>
+        </div>
+        <div class="card-body">
+            <div class="col">
+                <p class="card-text"><b>Тип мероприятия:</b> {{event.event_type}}</p>
+                <p class="card-text"><b>Проект:</b> {{event.project.name}} <br></p>
+                <p class="card-text">
+                    {% if event.event_link != "" %}
+                        <a href="{{event.event_link}}" class="card-link" target="_blank">Ссылка на публикацию</a>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col">
+                <p class="card-text"><b>Дата начала:</b> {{event.start_date}}</p>
+                <p class="card-text"><b>Дата окончания:</b> {{event.end_date}}</p>
+            </div>
+            <div class="col">
+                <p class="card-text">
+                    {% if event.tags.all.count != 0 %}
+                        <b>Теги:</b> {% for tag in event.tags.all %}#{{tag.name}} {% endfor %}
+                    {% endif %}
+                </p>
+                <p class="card-text">
+                    {% if event.notes != "" %}<b>Примечания:</b> {{event.notes}}{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="message">
+        {% if message.0 == "new_citizen_added" %}
+            <div class="alert alert-success" role="alert">
+                Участник '{{message.1}}' добавлен!
+            </div>
+        {% elif message.0 == "citizen_added" %}
+            <div class="alert alert-primary" role="alert">
+                Участник '{{message.1}}' добавлен!
+            </div>
+        {% elif message.0 == "deleted" %}
+            <div class="alert alert-danger" role="alert">
+                Участник '{{message.1}}' удалён с мероприятия!
+            </div>
+        {% endif %}
+    </div>
+    <div class="participants-list">
+        <div class="participants-list-header">
+            <h2>Участники мероприятия</h2>
+            <a data-bs-toggle="modal" data-bs-target="#AddCitizenModal" class="btn btn-sm btn-success">Добавить участника</a>
+        </div>
+        <table class="table">
+            <tr> 
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Email</th>
+                <th scope="col">Номер телефона</th>
+            </tr>
+            {% for participant in event.participants.all %}
+                <tr>
+                    <td scope="row" class="nowrap">{{participant.last_name}}</td>
+                    <td scope="row" class="nowrap">{{participant.first_name}}</td>
+                    <td scope="row" class="nowrap">
+                        {% if participant.middle_name != None %}
+                            {{participant.middle_name}}
+                        {% endif %}
+                    </td>
+                    <td scope="row" class="nowrap">{{participant.email}}</td>
+                    <td scope="row" class="nowrap">{{participant.phone_number}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

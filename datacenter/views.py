@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Event, EventType, Project
+from .models import Citizen, Event, EventType, Project, DisabilityType
 from reports.models import Tag
 
 # Create your views here.
@@ -98,4 +98,70 @@ def events_page(request):
         "event_filter": event_filter,
         "message": message,
         "page_name": "Мероприятия | ЦОПП СО"
+    })
+
+@csrf_exempt
+@login_required
+def event_reg(request, event_id):
+    message = ""
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == 'POST':
+        if 'delete-event' in request.POST:
+            event.delete()
+            message = ["deleted", event]
+        elif 'edit-event' in request.POST:
+            event.name = request.POST["name"]
+            event.event_link = request.POST["event_link"]
+            event.event_type = get_object_or_404(EventType, id=request.POST["event_type"])
+            event.project = get_object_or_404(Project, id=request.POST["project"])
+            event.tags.clear()
+            event.tags.add(*request.POST.getlist("tags"))
+            event.start_date = datetime.strptime(request.POST["start_date"],"%Y-%m-%d")
+            event.end_date = datetime.strptime(request.POST["end_date"],"%Y-%m-%d")
+            event.notes = request.POST["notes"]
+            event.save()
+            message = ["changed", event]
+        elif 'add-participant' in request.POST:
+            citizen = Citizen.objects.filter(snils_number=request.POST["snils"].strip())
+            if len(citizen) == 0:
+                citizen = Citizen(
+                    snils_number=request.POST["snils"].strip()
+                )
+                citizen.save()
+                message = ["new_citizen_added", citizen]
+            else:
+                citizen = citizen[0]
+                message = ["citizen_added", citizen]
+            citizen.last_name=request.POST["last_name"].strip().capitalize()
+            citizen.first_name=request.POST["first_name"].strip().capitalize()
+            citizen.middle_name=request.POST["middle_name"].strip().capitalize()
+            citizen.birthday=datetime.strptime(request.POST["birthday"],"%Y-%m-%d")
+            citizen.sex=request.POST["sex"]
+            citizen.email=request.POST["email"].strip()
+            citizen.phone_number=request.POST["phone"].strip()
+            citizen.snils_number=request.POST["snils"].strip()
+            citizen.education_type=request.POST["education_type"]
+            citizen.disability_type=get_object_or_404(
+                DisabilityType, 
+                id=request.POST["disability"]
+            )
+            if request.POST.getlist("is_russian_citizen") != ['on']:
+                    citizen.is_russian_citizen = False
+            if request.POST.getlist("is_employed") == ['on']: 
+                citizen.is_employed = True
+            citizen.save()
+            event.participants.add(citizen)
+    event_types = EventType.objects.all()
+    projects = Project.objects.all()
+    tags = Tag.objects.all()
+    disabilities = DisabilityType.objects.all()
+
+    return render(request, "datacenter/event_reg.html", {
+        "event": event,
+        "event_types": event_types,
+        "projects": projects,
+        "tags": tags,
+        "disabilities": disabilities,
+        "message": message,
+        "page_name": "Регистрация на мероприятие | ЦОПП СО"
     })

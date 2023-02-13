@@ -1,0 +1,68 @@
+.body
+    flex-direction: column
+    background-color: #F2F2F2
+
+.event-card
+    margin: auto
+    margin-top: 35px
+    margin-bottom: 35px
+    width: 960px
+    height: fit-content
+    border: 0
+    border-radius: 12px
+    box-shadow: 6px 6px 6px rgb(0 0 0 / 15%)
+    b
+        font-weight: 500
+    .card-header
+        font-size: 20px
+        background-color: white
+        display: flex
+        justify-content: space-between
+        padding: 10px 50px
+        border-top-right-radius: 12px
+        border-top-left-radius: 12px
+    .card-body
+        padding: 15px 50px
+        display: inline-grid
+        grid-template-columns: auto 320px auto
+        .card-text
+            margin-top: 0px
+            margin-bottom: 5px
+.message
+    width: 960px
+    margin: auto
+    margin-top: 0
+    margin-bottom: 0
+    text-align: center
+.participants-list
+    width: 960px
+    margin: auto
+    margin-top: 0
+    background-color: white
+    padding: 25px 50px 10px 50px
+    @media (max-width: 1250px)
+        width: 100%
+        margin: auto
+        max-width: 900px
+        padding: 25px
+    border-radius: 12px
+    box-shadow: 4px 4px 4px 0px #00000026
+    .participants-list-header
+        display: flex
+        justify-content: space-between
+        margin-bottom: 15px
+    .table
+        th
+            color: #394959
+            font-weight: 400 !important
+            font-size: 16px
+            line-height: 20px
+            text-align: center
+            border-top: 0
+            border-bottom: 2px solid #394959
+        tr
+            color: #394959
+            font-weight: 300 !important
+            text-align: center
+            &:last-child td
+                border-bottom: 0
