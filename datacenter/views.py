@@ -6,7 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import Citizen, Event, EventType, Project, DisabilityType
 from reports.models import Tag
-
+from .forms import ImportDataForm
+from . import imports
 # Create your views here.
 @csrf_exempt
 @login_required
@@ -122,10 +123,10 @@ def event_reg(request, event_id):
             event.save()
             message = ["changed", event]
         elif 'add-participant' in request.POST:
-            citizen = Citizen.objects.filter(snils_number=request.POST["snils"].strip())
+            citizen = Citizen.objects.filter(snils_number=request.POST["snils"].replace(" ", ""))
             if len(citizen) == 0:
                 citizen = Citizen(
-                    snils_number=request.POST["snils"].strip()
+                    snils_number=request.POST["snils"].replace(" ", "")
                 )
                 citizen.save()
                 message = ["new_citizen_added", citizen]
@@ -153,6 +154,11 @@ def event_reg(request, event_id):
             event.participants.remove(citizen)
             event.save()
             message = ["citizen_deleted", citizen]
+        elif 'import-participants' in request.POST:
+            form = ImportDataForm(request.POST, request.FILES)
+            if form.is_valid():
+                data = imports.participants(form, event)
+                message = data
     event_types = EventType.objects.all()
     projects = Project.objects.all()
     tags = Tag.objects.all()
@@ -165,5 +171,6 @@ def event_reg(request, event_id):
         "tags": tags,
         "disabilities": disabilities,
         "message": message,
+        'form' : ImportDataForm(),
         "page_name": "Регистрация на мероприятие | ЦОПП СО"
     })

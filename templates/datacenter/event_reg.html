@@ -11,6 +11,29 @@
 {% endblock %}
 
 {% block body %}
+    <div class="modal fade add-citizen-modal" id="ImportModal" tabindex="-1" aria-labelledby="ImportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ImportModalLabel">Импорт участников</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form enctype="multipart/form-data" action="{% url 'event_reg' event.id %}" method="post">
+                        <div class="mb-3">
+                            {{ form }}
+                        </div>
+                        <p style="margin: 0;"><a href="https://docs.google.com/spreadsheets/d/1mg_lWECAnsFC80Pr6tz1mqsX8q-HPx7dKp6ywSAN3Sg/edit?usp=sharing" target="_blank">Шаблон</a></p>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" name="import-participants">Импортировать</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade add-citizen-modal" id="AddCitizenModal" tabindex="-1" aria-labelledby="AddCitizenModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -214,6 +237,45 @@
             <div class="alert alert-danger" role="alert">
                 Участник '{{message.1}}' удалён с мероприятия!
             </div>
+        {% elif message.0 == "Import" %}
+            {% if message.1 == "OK" %}
+                <div class="alert alert-success" role="alert">
+                    Новых граждан добавлено {{message.2}}.
+                    Граждан записано на мероприятие {{message.3}}.
+                </div>
+                {% if message.4.count != 0 %}
+                    {% for mistake in message.4 %}
+                        {% if mistake.0 == "MissingField" %}
+                            <div class="alert alert-warning" role="alert">
+                                Участник с СНИЛС '{{mistake.2}}' не добавлен!
+                                <br>Следующие поля пусты или заполнены не верно:
+                                {% for field in mistake.1 %}
+                                    {% if forloop.last %} '{{field}}'. 
+                                    {% else %}'{{field}}', 
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% elif message.1 == "IndexError" %}
+                <div class="alert alert-danger" role="alert">
+                    Что-то пошло не так! Попробуйте потворить или обратитесь к тех. специалисту!
+                </div>
+            {% elif message.1 == 'EmptySheet' %}
+                <div class="alert alert-danger" role="alert">
+                    Таблица пуста!
+                </div> 
+            {% elif message.1 == 'MissingFieldsError' %}
+                <div class="alert alert-danger" role="alert">
+                    Таблица не импортировано. Часть полей отсутствует:
+                    {% for field in message.2 %}
+                        {% if forloop.last %} '{{field}}'. 
+                        {% else %}'{{field}}', 
+                        {% endif %}
+                    {% endfor %}
+                </div> 
+            {% endif %}
         {% endif %}
     </div>
     <div class="participants-list">
@@ -224,7 +286,10 @@
                     <img  src="{% static 'datacenter/img/edit-icon.svg' %}" alt="">
                 </div>
             </h2>
-            <a data-bs-toggle="modal" data-bs-target="#AddCitizenModal" class="btn btn-sm btn-success">Добавить участника</a>
+            <div>
+                <a data-bs-toggle="modal" data-bs-target="#ImportModal" class="btn btn-sm btn-outline-success">Импортировать участников</a>
+                <a data-bs-toggle="modal" data-bs-target="#AddCitizenModal" class="btn btn-sm btn-success">Добавить участника</a>
+            </div>
         </div>
         {% if event.participants.all.count != 0 %}
             <table class="table">
