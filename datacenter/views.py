@@ -141,10 +141,7 @@ def event_reg(request, event_id):
             citizen.phone_number=request.POST["phone"].strip()
             citizen.snils_number=request.POST["snils"].strip()
             citizen.education_type=request.POST["education_type"]
-            citizen.disability_type=get_object_or_404(
-                DisabilityType, 
-                id=request.POST["disability"]
-            )
+            citizen.disability_type.add(*request.POST.getlist("disability"))
             if request.POST.getlist("is_russian_citizen") != ['on']:
                     citizen.is_russian_citizen = False
             if request.POST.getlist("is_employed") == ['on']: 
