@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -8,7 +10,11 @@ from .models import Citizen, Event, EventType, Project, DisabilityType
 from reports.models import Tag
 from .forms import ImportDataForm
 from . import imports
+
 # Create your views here.
+def index(request):
+    return HttpResponseRedirect(reverse("events_page"))
+
 @csrf_exempt
 @login_required
 def events_page(request):
