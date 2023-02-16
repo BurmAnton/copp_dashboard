@@ -143,6 +143,8 @@ USE_TZ = True
 STATIC_URL = '/copp_dashboard/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "copp_dashboard/static",
+    '/var/www/copp_dashboard/static/',
 ]
 
 # Default primary key field type
