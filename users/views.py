@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 def login(request):
     message = None
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("admin:index"))
+        return HttpResponseRedirect(reverse("events_page"))
     elif request.method == "POST":
         email = request.POST["email"]
         password = request.POST["password"]

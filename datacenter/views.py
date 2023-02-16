@@ -14,7 +14,7 @@ from . import imports
 
 # Create your views here.
 def index(request):
-    return HttpResponseRedirect(reverse("events_page"))
+    return HttpResponseRedirect(reverse("login"))
 
 @csrf_exempt
 @login_required
