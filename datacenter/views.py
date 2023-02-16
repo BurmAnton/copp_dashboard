@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 from .models import Citizen, Event, EventType, Project, DisabilityType
 from reports.models import Tag
@@ -179,4 +180,97 @@ def event_reg(request, event_id):
         "message": message,
         'form' : ImportDataForm(),
         "page_name": "Регистрация на мероприятие | ЦОПП СО"
+    })
+
+@csrf_exempt
+@login_required
+def citizens_list(request):
+    message = ""
+    citizens_filter = None
+    citizens = Citizen.objects.all()
+    if request.method == 'POST':
+        if 'citizens-filter' in request.POST:
+            citizens_filter = []
+            education_types = request.POST.getlist("education_types")
+            citizens_filter.append(education_types)
+            if len(education_types) != 0: 
+                citizens = citizens.filter(
+                    education_type__in=education_types
+                ).distinct()
+            disabilities = request.POST.getlist("disabilities")
+            citizens_filter.append(list(map(int, disabilities)))
+            if len(disabilities) != 0: citizens = citizens.filter(
+                    disability_type__in=disabilities).distinct()
+            start_date = request.POST["start_date"]
+            if start_date != '': 
+                citizens = citizens.filter(
+                    birthday__gt=datetime.strptime(start_date,"%Y-%m-%d")
+                )
+                citizens_filter.append(datetime.strptime(start_date,"%Y-%m-%d"
+                                                        ).strftime("%Y-%m-%d"))
+            else:
+                citizens_filter.append('')
+            end_date = request.POST["end_date"]
+            if end_date != '': 
+                citizens = citizens.filter(
+                    birthday__lt=datetime.strptime(end_date,"%Y-%m-%d")
+                )
+                citizens_filter.append(datetime.strptime(end_date,"%Y-%m-%d"
+                                                        ).strftime("%Y-%m-%d"))
+            else:
+                citizens_filter.append('')
+            is_russian_citizen = request.POST.getlist("is_russian_citizen")
+            if is_russian_citizen != ['on']:
+                citizens = citizens.filter(is_russian_citizen=False)
+                citizens_filter.append(False)
+            else:
+                citizens_filter.append(True)
+            is_employed = request.POST.getlist("is_employed")
+            if is_employed == ['on']:
+                citizens = citizens.filter(Q(is_employed=True) | 
+                                        Q(is_employed_after=True))
+                citizens_filter.append(True)
+            else:
+                citizens_filter.append(False)
+        if 'delete-citizen' in request.POST:
+            citizen_id = request.POST["id"]
+            citizen = get_object_or_404(Citizen, id=citizen_id)
+            citizen.delete()
+            message = ["delete-citizen", citizen]
+        if 'change-citizen' in request.POST:
+            citizen_id = request.POST["id"]
+            citizen = get_object_or_404(Citizen, id=citizen_id)
+            snils_number=request.POST["snils_number"].replace(" ", "")
+            snils_check = Citizen.objects.filter(
+                snils_number=snils_number).exclude(id=citizen.id)
+            if len(snils_check) == 0:
+                citizen.last_name=request.POST["last_name"].strip().capitalize()
+                citizen.first_name=request.POST["first_name"].strip().capitalize()
+                citizen.middle_name=request.POST["middle_name"].strip().capitalize()
+                citizen.birthday=datetime.strptime(request.POST["birthday"],"%Y-%m-%d")
+                citizen.sex=request.POST["sex"]
+                citizen.email=request.POST["email"].strip()
+                citizen.phone_number=request.POST["phone_number"].strip()
+                citizen.snils_number=snils_number
+                citizen.education_type=request.POST["education_type"]
+                citizen.disability_type.add(*request.POST.getlist("disability"))
+                if request.POST.getlist("is_russian_citizen") != ['on']:
+                        citizen.is_russian_citizen = False
+                if request.POST.getlist("is_employed") == ['on']: 
+                    citizen.is_employed = True
+                if request.POST.getlist("is_employed_after") == ['on']: 
+                    citizen.is_employed = True
+                citizen.save()
+                message = ["citizen_change", citizen]
+            else:
+                citizen = citizen[0]
+                message = ["snils_duplicate", snils_number]
+
+    return render(request, "datacenter/citizens_list.html", {
+        "citizens": citizens,
+        "citizens_filter": citizens_filter,
+        "disabilities": DisabilityType.objects.all(),
+        "message": message,
+        "education_types": Citizen.EDUCATION_CHOICES,
+        "page_name": "Граждани | ЦОПП СО"
     })

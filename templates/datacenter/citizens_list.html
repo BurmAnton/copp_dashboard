@@ -1,0 +1,230 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}{{page_name}}{% endblock %}
+
+{% block style %}
+    <link href="{% static 'datacenter/css/citizen_list.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}
+
+{% block body %}
+    {% for citizen in citizens %}
+        <div class="modal fade change-citizen-modal" id="ChangeCitizen{{citizen.id}}Modal" tabindex="-2" aria-labelledby="ChangeCitizen{{citizen.id}}ModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ChangeCitizen{{citizen.id}}ModalLabel">Добавить участника</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'citizens_list' %}" method="post">
+                            <input type="input" class="form-control" name="id" value="{{citizen.id}}" style="display: none;" required>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="snils_number" value="{{citizen.snils_number}}" placeholder="СНИЛС" required>
+                                <label for="name">СНИЛС</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="last_name" value="{{citizen.last_name}}" placeholder="Фамилия" required>
+                                <label for="name">Фамилия</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="first_name" value="{{citizen.first_name}}" placeholder="Имя" required>
+                                <label for="name">Имя</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="middle_name"
+                                {% if citizen.middle_name != None %} value="{{citizen.middle_name}}" {% endif %}
+                                placeholder="Отчество">
+                                <label for="name">Отчество</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="phone_number" value="{{citizen.phone_number}}" placeholder="Телефон">
+                                <label for="name">Телефон</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" name="email" value="{{citizen.email}}" placeholder="Email">
+                                <label for="name">Email</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="birthday" value="{{citizen.birthday.isoformat}}" placeholder="Дата рождения" aria-label="Дата рождения">
+                                <label for="birthday" class="form-label">Дата рождения</label>
+                            </div>
+                            <div class="form-floating mb-3 form-silectpicker">
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="sex" required>
+                                    <option {% if citizen.sex == 'M' %} selected {% endif %} value="M">Мужской</option>
+                                    <option {% if citizen.sex == 'F' %} selected {% endif %} value="F">Женский</option>
+                                </select>
+                                <label for="sex" class="form-label">Пол</label>
+                            </div>
+                            <div class="form-floating mb-3 form-silectpicker">
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="education_type" required>
+                                    <option>Мужской</option>
+                                    {% for education_type in education_types %}
+                                        <option {% if education_type.0 in citizen.education_type %} selected {% endif %} value="{{education_type.0}}">
+                                            {{education_type.1}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <label for="education_type" class="form-label">Образование</label>
+                            </div>
+                            <div class="form-floating mb-3 form-silectpicker">
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="disability" multiple>
+                                    {% for disability in disabilities %}
+                                        <option {% if disability in citizen.disability_type.all %} selected {% endif %} value="{{disability.id}}">
+                                            {{disability.name}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <label for="disability" class="form-label">ОВЗ</label>
+                            </div>
+
+                    </div>
+                    <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" name="change-citizen">Сохранить изменения</button>
+                        </form>
+                        <a data-bs-toggle="modal" data-bs-target="#DeleteCitizen{{citizen.id}}Modal" class="btn btn-danger">
+                            Удалить
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade delete-citizen-modal" id="DeleteCitizen{{citizen.id}}Modal" tabindex="1" aria-labelledby="DeleteVitizen{{citizen.id}}Label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DeleteCitizen{{citizen.id}}Label">Удаление гражданина</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'citizens_list' %}" method="post">
+                            <input type="input" class="form-control" name="id" value="{{citizen.id}}" style="display: none;" required>
+                            <p>
+                                Вы действительно хотите удалить гражданина '{{citizen}}'?
+                            </p>
+                    </div>
+                    <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger" name="delete-citizen">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="header">
+        <h1>Граждани</h1>
+    </div>
+    <div class="filter">
+        <h2>Фильтр</h2>
+        <form action="{% url 'citizens_list' %}" method="post">
+            <div class="form-floating mb-3 education-types-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="education_types" multiple>
+                    {% for education_type in education_types %}
+                        {% if education_type.0 in citizens_filter.0 %}
+                            <option selected value="{{education_type.0}}">{{education_type.1}}</option>
+                        {% else %}
+                            <option value="{{education_type.0}}">{{education_type.1}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="education_types" class="form-label">Образование</label>
+            </div>
+            <div class="form-floating mb-3 disabilities-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="disabilities" multiple>
+                    {% for disability in disabilities %}
+                        {% if disability.id in citizens_filter.1 %}
+                            <option selected value="{{disability.id}}">{{disability.name}}</option>
+                        {% else %}
+                            <option value="{{disability.id}}">{{disability.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="disabilities" class="form-label">ОВЗ</label>
+            </div>
+            <div class="form-floating mb-3 start-date-filter">
+                <input type="date" class="form-control" name="start_date" value="{{citizens_filter.2}}"  placeholder="Дата начала" aria-label="Дата">
+                <label for="start_date" class="form-label">Старше</label>
+            </div>
+            <div class="form-floating mb-3 end-date-filter">
+                <input type="date" class="form-control" name="end_date" value="{{citizens_filter.3}}" placeholder="Дата окончания" aria-label="Дата">
+                <label for="end_date" class="form-label">Младше</label>
+            </div>
+            <div class="checkboxes-filter">
+                <div class="form-check">
+                    <input class="form-check-input" name="is_russian_citizen" type="checkbox"
+                    {% if citizens_filter.4 == True %}
+                        checked
+                    {% endif %}>
+                    <label for="is_russian_citizen" class="form-check-label">Гражданин РФ</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" name="is_employed" type="checkbox"
+                    {% if citizens_filter.5 == True %}
+                        checked
+                    {% endif %}>
+                    <label for="is_employed" class="form-check-label">Трудоустроен</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" name="citizens-filter">Применить</button>
+        </form>
+    </div>
+    <div class="message">
+        {% if message.0 == 'delete-citizen' %}
+            <div class="alert alert-danger" role="alert">
+                Гражданин '{{message.1}}' удалён!
+            </div>
+        {% elif message.0 == 'citizen_change' %}
+            <div class="alert alert-success" role="alert">
+                Гражданин '{{message.1}}' изменён!
+            </div>
+        {% elif message.0 == 'snils_duplicate' %}
+            <div class="alert alert-warning" role="alert">
+                Гражданин со СНИЛС '{{message.1}}' уже есть в системе!
+            </div>
+        {% endif %}
+    </div>
+    <div class="citizens-list">
+        <div class="citizens-list-header">
+            <h2>Список граждан</h2>
+        </div>
+        {% if citizens.count != 0 %}
+            <table class="table">
+                <tr> 
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Отчество</th>
+                    <th scope="col">Образование</th>
+                    <th scope="col">СНИЛС</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Номер телефона</th>
+                    <th scope="col">Дата рождения</th>
+                </tr>
+                {% for citizen in citizens %}
+                    <tr>
+                        <td scope="row" class="nowrap last-name-cell" data-bs-toggle="modal" data-bs-target="#ChangeCitizen{{citizen.id}}Modal">
+                            {{citizen.last_name}}
+                        </td>
+                        <td scope="row" class="nowrap">{{citizen.first_name}}</td>
+                        <td scope="row" class="nowrap">
+                            {% if citizen.middle_name != None %}
+                                {{citizen.middle_name}}
+                            {% endif %}
+                        </td>
+                        <td scope="row" class="nowrap">{{citizen.get_education_type_display}}</td>
+                        <td scope="row" class="nowrap">{{citizen.snils_number}}</td>
+                        <td scope="row" class="nowrap">{{citizen.email}}</td>
+                        <td scope="row" class="nowrap">{{citizen.phone_number}}</td>
+                        <td scope="row" class="nowrap">{{citizen.birthday}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% elif citizens.count != 0 and citizens_filter != None %}
+            <div class="zero-citizens">На платформе не зарегистрировано ни одного гражданина, соответствующего параметрами фильтрации.</div>
+        {% else %}
+            <div class="zero-citizens">На платформе не зарегистрировано ни одного гражданина.</div>
+        {% endif %}
+    </div>
+{% endblock %}
