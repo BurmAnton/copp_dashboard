@@ -40,11 +40,17 @@
                         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 {% if request.user.is_superuser %}
+                                <li class="nav-item">
+                                    <a class="nav-link active" aria-current="page" href="{% url 'groups_page' %}">Группы</a>
+                                </li>
                                     <li class="nav-item">
                                         <a class="nav-link active" aria-current="page" href="{% url 'events_page' %}">Мероприятия</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link active" aria-current="page" href="{% url 'citizens_list' %}">Граждани</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="{% url 'admin:datacenter_educationprogram_changelist' %}">Программы</a>
                                     </li>
                                 {% endif %}
                             </ul>

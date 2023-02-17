@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from django_admin_listfilter_dropdown.filters import ChoiceDropdownFilter, \
-                                                     RelatedOnlyDropdownFilter
+                                                     RelatedOnlyDropdownFilter\
+                                                     , DropdownFilter
 
 from datacenter.models import EducationProgram, DisabilityType, Citizen, \
                               Group, Event, EventType, Competence, Project
@@ -58,6 +59,7 @@ class EducationProgramAdmin(admin.ModelAdmin):
     list_filter = (
         ('competence', RelatedOnlyDropdownFilter),
         ('program_type', ChoiceDropdownFilter),
+        ('duration', DropdownFilter),
     )
 
 

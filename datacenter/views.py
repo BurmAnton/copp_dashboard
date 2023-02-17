@@ -7,7 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
-from .models import Citizen, Event, EventType, Project, DisabilityType
+from .models import Citizen, Event, EventType, Project, DisabilityType \
+                    , Group, EducationProgram, Competence
 from reports.models import Tag
 from .forms import ImportDataForm
 from . import imports
@@ -273,4 +274,81 @@ def citizens_list(request):
         "message": message,
         "education_types": Citizen.EDUCATION_CHOICES,
         "page_name": "Граждани | ЦОПП СО"
+    })
+
+@csrf_exempt
+@login_required
+def groups_page(request):
+    message = None
+    groups_filter = None
+    if 'add-group' in request.POST:
+            group = Group(name=request.POST["name"].strip())
+            group.save()
+            message = ["added",]
+    elif 'edit-group' in request.POST:
+        group_id = request.POST["id"].strip()
+        group = get_object_or_404(Group, id=group_id)
+        group.name=request.POST["name"].strip()
+        message = ["changed",]
+    if 'edit-group' in request.POST or 'add-group' in request.POST:
+        education_program_id=request.POST["education_program"].strip()
+        education_program=get_object_or_404(EducationProgram,id=education_program_id)
+        group.education_program=education_program
+        project_id=request.POST["project"].strip()
+        project=get_object_or_404(Project,id=project_id)
+        group.project=project
+        group.tags.clear()
+        group.tags.add(*request.POST.getlist("tags"))
+        group.start_date=datetime.strptime(request.POST["start_date"],"%Y-%m-%d")
+        group.end_date=datetime.strptime(request.POST["end_date"],"%Y-%m-%d")
+        group.save()
+        message.append(group)
+    groups = Group.objects.all()
+    if 'filter-groups' in request.POST:
+        groups_filter = []
+        competencies = request.POST.getlist("competencies")
+        groups_filter.append(list(map(int, competencies)))
+        if len(competencies) != 0: groups = groups.filter(
+            education_program__competence__in=competencies
+        )
+        education_programs = request.POST.getlist("education_programs")
+        groups_filter.append(list(map(int, education_programs)))
+        if len(education_programs) != 0: groups = groups.filter(
+            education_program__in=education_programs
+        )
+        projects = request.POST.getlist("projects")
+        groups_filter.append(list(map(int, projects)))
+        if len(projects) != 0: groups = groups.filter(project__in=projects)
+        tags = request.POST.getlist("tags")
+        groups_filter.append(list(map(int,tags)))
+        if len(tags) != 0: groups = groups.filter(tags__in=tags)
+        start_date = request.POST["start_date"]
+        if start_date != '': 
+            groups = groups.filter(
+                start_date__gte=datetime.strptime(start_date,"%Y-%m-%d")
+            )
+            groups_filter.append(datetime.strptime(start_date,"%Y-%m-%d").strftime("%Y-%m-%d"))
+        else:
+            groups_filter.append('')
+        end_date = request.POST["end_date"]
+        if end_date != '': 
+            groups = groups.filter(
+                end_date__lte=datetime.strptime(end_date,"%Y-%m-%d")
+            )
+            groups_filter.append(datetime.strptime(end_date,"%Y-%m-%d").strftime("%Y-%m-%d"))
+
+    tags = Tag.objects.filter(tag_type__in=['GRP', 'ALL'])
+    projects = Project.objects.all()
+    competencies = Competence.objects.all()
+    education_programs = EducationProgram.objects.all()
+
+    return render(request, "datacenter/groups_page.html", {
+        "tags": tags,
+        "projects": projects,
+        "groups_filter": groups_filter,
+        "groups": groups,
+        "competencies": competencies,
+        "education_programs": education_programs,
+        "message": message,
+        "page_name": "Группы | ЦОПП СО"
     })

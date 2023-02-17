@@ -1,0 +1,247 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}{{page_name}}{% endblock %}
+
+{% block style %}
+        <link href="{% static 'datacenter/css/groups_page.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade add-event-modal" id="AddGroupModal" tabindex="-1" aria-labelledby="AddGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddGroupModalLabel">Добавить группу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'groups_page' %}" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="input" class="form-control" name="name" placeholder="Название группы" required>
+                            <label for="name">Название группы</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="event_type" class="form-label">Программа</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="education_program" required>
+                                {% for education_program in education_programs %}
+                                    <option value="{{education_program.id}}">{{education_program.program_name}} ({{education_program.get_program_type_display}}, {{education_program.duration}}ч.)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="project" class="form-label">Проект</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="project" required>
+                                {% for project in projects %}
+                                    <option value="{{project.id}}">{{project.name}} ({{project.get_project_type_display}})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Теги</label>
+                            <select class="selectpicker" data-width="100%" data-live-search="true" name="tags" multiple>
+                                {% for tag in tags %}
+                                    <option value="{{tag.id}}">{{tag.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="start_date" placeholder="Дата начала" aria-label="Дата" required>
+                            <label for="start_date" class="form-label">Дата начала</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" name="end_date" placeholder="Дата окончания" aria-label="Дата" required>
+                            <label for="end_date" class="form-label">Дата окончания</label>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" name="add-group">Добавить группу</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for group in groups %}
+        <div class="modal fade edit-event-modal" id="EditGroup{{group.id}}Modal" tabindex="-1" aria-labelledby="EditGroup{{group.id}}ModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EditGroup{{group.id}}ModalLabel">Добавить группу</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'groups_page' %}" method="post">
+                            <input type="input" class="form-control" name="id" value="{{group.id}}" style="display: none;"  required>
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control" name="name" value="{{group.name}}" placeholder="Название группы" required>
+                                <label for="name">Название группы</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="event_type" class="form-label">Программа</label>
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="education_program" required>
+                                    {% for education_program in education_programs %}
+                                        <option {% if group.education_program == education_program %}selected{% endif %} value="{{education_program.id}}">
+                                            {{education_program.program_name}} ({{education_program.get_program_type_display}})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="project" class="form-label">Проект</label>
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="project" required>
+                                    {% for project in projects %}
+                                        <option {% if group.project == project %}selected{% endif %} value="{{project.id}}">
+                                            {{project.name}} ({{project.get_project_type_display}})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Теги</label>
+                                <select class="selectpicker" data-width="100%" data-live-search="true" name="tags" multiple>
+                                    {% for tag in tags %}
+                                        <option {% if tag in group.tags.all %}selected{% endif %} value="{{tag.id}}">
+                                            {{tag.name}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="start_date" value="{{group.start_date.isoformat}}" placeholder="Дата начала" aria-label="Дата" required>
+                                <label for="start_date" class="form-label">Дата начала</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="date" class="form-control" name="end_date" value="{{group.end_date.isoformat}}" placeholder="Дата окончания" aria-label="Дата" required>
+                                <label for="end_date" class="form-label">Дата окончания</label>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" name="edit-group">Сохранить изменения</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="header">
+        <h1>Группы</h1>
+        <a data-bs-toggle="modal" data-bs-target="#AddGroupModal" class="btn btn-success">Добавить группы</a>
+    </div>
+    <div class="filter">
+        <h2>Фильтр</h2>
+        <form action="{% url 'groups_page' %}" method="post">
+            <div class="form-floating mb-3 competencies-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="competencies" multiple>
+                    {% for competence in competencies %}
+                        {% if competence.id in groups_filter.0 %}
+                            <option selected value="{{competence.id}}">{{competence.name}}</option>
+                        {% else %}
+                            <option value="{{competence.id}}">{{competence.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="competencies" class="form-label">Компетенции</label>
+            </div>
+            <div class="form-floating mb-3 education-programs-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="education_programs" multiple>
+                    {% for education_program in education_programs %}
+                        {% if education_program.id in groups_filter.1 %}
+                            <option selected value="{{education_program.id}}">{{education_program.program_name}}</option>
+                        {% else %}
+                            <option value="{{education_program.id}}">{{education_program.program_name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="education_programs" class="form-label">Программы</label>
+            </div>
+            <div class="form-floating mb-3 project-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="projects" multiple>
+                    {% for project in projects %}
+                        {% if project.id in groups_filter.2 %}
+                            <option selected value="{{project.id}}">{{project.name}}</option>
+                        {% else %}
+                            <option value="{{project.id}}">{{project.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="projects" class="form-label">Проекты</label>
+            </div>
+            <div class="form-floating mb-3 tag-filter filter-selectpicker">
+                <select class="selectpicker" data-width="100%" data-live-search="true" name="tags" multiple>
+                    {% for tag in tags %}
+                        {% if tag.id in groups_filter.3 %}
+                            <option selected value="{{tag.id}}">{{tag.name}}</option>
+                            {% else %}
+                            <option value="{{tag.id}}">{{tag.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="tags" class="form-label">Теги</label>
+            </div>
+            <div class="dates-filter">
+                <div class="form-floating mb-3 start-date-filter">
+                    <input type="date" class="form-control" name="start_date" value="{{groups_filter.4}}"  placeholder="Дата начала" aria-label="Дата">
+                    <label for="start_date" class="form-label">Дата начала</label>
+                </div>
+                <div class="form-floating mb-3 end-date-filter">
+                    <input type="date" class="form-control" name="end_date" value="{{groups_filter.5}}" placeholder="Дата окончания" aria-label="Дата">
+                    <label for="end_date" class="form-label">Дата окончания</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" name="filter-groups">Применить</button>
+        </form>
+    </div>
+    <div class="message">
+        {% if message.0 == "added" %}
+            <div class="alert alert-success" role="alert">
+                Группа '{{message.1.name}}' добавлена!
+            </div>
+        {% elif message.0 == "changed" %}
+            <div class="alert alert-primary" role="alert">
+                Группа '{{message.1.name}}' изменена!
+            </div>
+        {% elif message.0 == "deleted" %}
+            <div class="alert alert-danger" role="alert">
+                Группа '{{message.1.name}}' удалена!
+            </div>
+        {% endif %}
+    </div>
+    <div class="groups-list row row-cols-3 row-cols-md-3 g-4">
+        {% for group in groups %}
+            <div class="col">
+                <div class="card group-card h-100">
+                    <div class="card-header">
+                        {{group.name}}
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">{{group.project.name}} ({{group.project.get_project_type_display}})</h6>
+                        <p class="card-text">
+                            <b>Программа:</b> {{group.education_program.program_name}}
+                            <br><b>Тип программа:</b> {{group.education_program.get_program_type_display}}
+                            <br><b>Участников:</b> {{group.citizens.count}}
+                        </p>
+                        <p class="card-text">
+                            <b>Дата начала:</b> {{group.start_date}} 
+                            <br><b>Дата окончания:</b> {{group.end_date}}
+                        </p>
+                        <p class="card-text">
+                            {% for tag in group.tags.all %}
+                                #{{tag.name}} 
+                            {% endfor %}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a data-bs-toggle="modal" data-bs-target="#EditGroup{{group.id}}Modal" class="btn btn-outline-primary">Изменить</a>
+                        <!--<a href=" url 'group_reg' event.id " target="_blank" class="btn btn-primary">Регистрация</a>-->
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
