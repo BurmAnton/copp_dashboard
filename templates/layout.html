@@ -40,18 +40,26 @@
                         <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 {% if request.user.is_superuser %}
-                                <li class="nav-item">
-                                    <a class="nav-link active" aria-current="page" href="{% url 'groups_page' %}">Группы</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Данные
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'citizens_list' %}">Граждани</a></li>
+                                      <li><a class="dropdown-item" href="{% url 'admin:datacenter_educationprogram_changelist' %}">Программы</a></li>
+                                      <li><hr style="border-top:0 !important;" class="dropdown-divider"></li>
+                                      <li><a class="dropdown-item" href="{% url 'events_page' %}">Мероприятия</a></li>
+                                      <li><a class="dropdown-item" href="{% url 'groups_page' %}">Группы</a></li>
+                                    </ul>
                                 </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="page" href="{% url 'events_page' %}">Мероприятия</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="page" href="{% url 'citizens_list' %}">Граждани</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active" aria-current="page" href="{% url 'admin:datacenter_educationprogram_changelist' %}">Программы</a>
-                                    </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                      Отчёты
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                      <li><a class="dropdown-item" href="{% url 'admin:reports_tag_changelist' %}">Теги</a></li>
+                                    </ul>
+                                </li>
                                 {% endif %}
                             </ul>
                             <div class="d-flex">
