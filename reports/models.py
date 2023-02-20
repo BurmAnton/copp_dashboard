@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.deletion import CASCADE, DO_NOTHING
 
-from datacenter.models import EducationProgram, Group, Event
+from datacenter.models import Competence, DisabilityType, EducationProgram, Group, Event, EventType
 
 # Create your models here.
 class ReportTemplate(models.Model):
@@ -48,6 +48,10 @@ class ReportField(models.Model):
         ('VNTS', "Мероприятий")
     ]
     field_type = models.CharField("Единица измерения", max_length=4, default='PPL', choices=FIELD_TYPES)
+
+    disabilities = models.ManyToManyField(DisabilityType, verbose_name="Типы ОВЗ", related_name="feilds", blank=True)
+    competencies = models.ManyToManyField(Competence, verbose_name="Компетенции", related_name="fields", blank=True)
+    event_types = models.ManyToManyField(EventType, verbose_name="Типы мероприятий", related_name="fields", blank=True)
     tags = models.ManyToManyField(Tag, verbose_name="Теги", related_name="fields", blank=True)
     stop_tags = models.ManyToManyField(Tag, verbose_name="Стоп-теги", related_name="stop_fields", blank=True)
     
@@ -60,7 +64,6 @@ class ReportField(models.Model):
 
 
 class TimeInterval(models.Model):
-    name = models.CharField("Название интервала", max_length=500, null=False, blank=False)
     report = models.ForeignKey(ReportTemplate, verbose_name="Отчёт", related_name="intervals", on_delete=CASCADE, null=False, blank=False)
 
     PERIOD_TYPES = [
