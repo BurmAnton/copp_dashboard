@@ -81,8 +81,8 @@ def participants(form, event):
 
 def load_participant(sheet, row):
     missing_fields = []
-    snils_number = sheet["СНИЛС"][row].replace(" ", "")
-    if snils_number == "": missing_fields.append("СНИЛС")
+    snils_number = sheet["СНИЛС"][row]
+    if snils_number != None: snils_number = snils_number.replace(" ", "")
     last_name = sheet["Фамилия"][row].replace(" ", "")
     if last_name == "": missing_fields.append("Фамилия")
     first_name = sheet["Имя"][row].replace(" ", "")
@@ -95,29 +95,31 @@ def load_participant(sheet, row):
     else: missing_fields.append("Пол")
     if isinstance(sheet["Дата рождения"][row], datetime):
         birthday = sheet["Дата рождения"][row]
-    else: missing_fields.append("Дата рождения")
+    else: birthday = None
     email = sheet["Email"][row].replace(" ", "")
     if email == "": missing_fields.append("Email")
     phone_number = sheet["Телефон"][row]
-    if phone_number == "" or phone_number == None: 
-        missing_fields.append("Телефон")
-    for education_choice in Citizen.EDUCATION_CHOICES:
-        if sheet["Образование"][row] in education_choice[1]: 
-            education_type = education_choice[0]
-            break
-    else: missing_fields.append("Образование")
+    if phone_number != None:
+        phone_number = phone_number.replace(" ", "")
+    education_type = None
+    if sheet["Образование"][row] is not None:
+        for education_choice in Citizen.EDUCATION_CHOICES:
+            if sheet["Образование"][row] in education_choice[1]: 
+                education_type = education_choice[0]
+                break
     is_russian_citizen = sheet["Гражданин РФ"][row]
-    if is_russian_citizen == "" or is_russian_citizen == None: 
-        missing_fields.append("Гражданин РФ")
-    is_employed = sheet["Занятость в момент регистрации"][row].replace(" ", "")
-    if is_employed == "": missing_fields.append("Занятость в момент регистрации")
+    if is_russian_citizen != None: 
+        is_russian_citizen = is_russian_citizen.replace(" ", "")
+    is_employed = sheet["Занятость в момент регистрации"][row]
+    if is_employed != None: 
+        is_employed = is_employed.replace(" ", "")
     disability_types = None
     if sheet["ОВЗ"][row] != None:
         disability_types = sheet["ОВЗ"][row].replace("  ", " ").strip().split(", ")
         disability_types = DisabilityType.objects.filter(name__in=disability_types)
 
     if len(missing_fields) == 0:
-        citizen, is_new = Citizen.objects.get_or_create(snils_number=snils_number)
+        citizen, is_new = Citizen.objects.get_or_create(email=email)
         citizen.snils_number = snils_number
         citizen.last_name = last_name
         citizen.first_name = first_name
@@ -125,12 +127,12 @@ def load_participant(sheet, row):
         citizen.birthday = birthday
         citizen.sex = sex
         citizen.email = email
-        citizen.phone_number = phone_number.replace(" ", "")
+        citizen.phone_number = phone_number
         citizen.education_type = education_type
-        if is_russian_citizen.replace(" ", "") != "Да": citizen.is_russian_citizen = False
+        if is_russian_citizen != "Да": citizen.is_russian_citizen = False
         if is_employed == "Да": citizen.is_employed = True
         if disability_types != None: 
             citizen.disability_type.add(*disability_types)
         citizen.save()
         return ['OK', is_new, citizen]
-    return ['MissingField', missing_fields, snils_number]
+    return ['MissingField', missing_fields, email]

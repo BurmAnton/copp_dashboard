@@ -247,7 +247,7 @@
                     {% for mistake in message.4 %}
                         {% if mistake.0 == "MissingField" %}
                             <div class="alert alert-warning" role="alert">
-                                Участник с СНИЛС '{{mistake.2}}' не добавлен!
+                                Участник с email '{{mistake.2}}' не добавлен!
                                 <br>Следующие поля пусты или заполнены не верно:
                                 {% for field in mistake.1 %}
                                     {% if forloop.last %} '{{field}}'. 
