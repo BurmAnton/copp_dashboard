@@ -1,0 +1,257 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block title %}{{page_name}}{% endblock %}
+
+{% block style %}
+        <link href="{% static 'reports/css/reports_page.css' %}" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.css" rel="stylesheet" type="text/css" />{% endblock %}
+
+{% block script %}
+    <script src="{% static 'reports/js/reports_page.js' %}" rel="stylesheet"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="modal fade add-report-modal" id="AddReportModal" tabindex="-1" aria-labelledby="AddReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="AddReportModalLabel">Добавить отчёт</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="add-report-form" action="" method="">
+                        <input type="number" style="display: none;" class="form-control fields_count" name="fields_count" value="0">
+                        <input type="number" style="display: none;" class="form-control periods_count" name="periods_count" value="1">
+                        <div class="intervals-step current-step">
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control report-name" name="name" placeholder="Название мероприятия" required>
+                                <label for="name">Название отчёта</label>
+                            </div>
+                            <div class="time-periods">
+                                <div class="time-period">
+                                    <div class="mb-3">
+                                        <div class="time-period-hdr">
+                                            <label for="event_type" class="form-label">Временной интервал №1</label>
+                                            <div class="btn btn-sm btn-outline-danger delete-interval">Удалить</div>
+                                        </div>
+                                        <select class="selectpicker period-type" data-width="100%" data-live-search="true" name="period_type_1" required>
+                                            {% for period_type in period_types %}
+                                                <option value="{{period_type.0}}">{{period_type.1}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <select class="selectpicker interval-type" data-width="100%" data-live-search="true" name="interval_type_1" required>
+                                            {% for interval_type in interval_types %}
+                                                <option value="{{interval_type.0}}">{{interval_type.1}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn btn-sm btn-outline-success add-interval">Добавить интервал</div>
+                        </div>
+                        <div class="field-step" data-field="1">
+                            <div class="form-floating mb-3">
+                                <input type="input" class="form-control field-name" name="field_name_1" placeholder="Название поля" required>
+                                <label for="name">Название поля</label>
+                            </div>
+                            <div class="mb-3 select-field">
+                                <label for="event_type" class="form-label">Тип поля (что считать?)</label>
+                                <select class="selectpicker field-type" title="Выберите тип поля" data-width="100%" data-live-search="true" name="field_type_1" required>
+                                    {% for field_type in field_types %}
+                                        <option value="{{field_type.0}}">{{field_type.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field program-field">
+                                <label for="competencies" class="form-label">Компетенции</label>
+                                <select class="selectpicker competencies field-input" data-width="100%" data-live-search="true" name="competencies_1" multiple>
+                                    {% for competence in competencies %}
+                                        <option value="{{competence.id}}">{{competence.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field event-field">
+                                <label for="event_type" class="form-label">Типы мероприятий</label>
+                                <select class="selectpicker event-types field-input" data-width="100%" data-live-search="true" name="event_types_1" multiple>
+                                    {% for event_type in event_types %}
+                                        <option value="{{event_type.id}}">{{event_type.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field common-field">
+                                <label for="event_type" class="form-label">Теги</label>
+                                <select class="selectpicker tags field-input" data-width="100%" data-live-search="true" name="tags_1" multiple>
+                                    {% for tag in tags %}
+                                        <option value="{{tag.id}}">{{tag.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field common-field">
+                                <label for="event_type" class="form-label">Стоп-теги</label>
+                                <select class="selectpicker stop-tags field-input" data-width="100%" data-live-search="true" name="stop_tags_1" multiple>
+                                    {% for tag in tags %}
+                                        <option value="{{tag.id}}">{{tag.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field common-field">
+                                <label for="projects" class="form-label">Проекты</label>
+                                <select class="selectpicker projects field-input" data-width="100%" data-live-search="true" name="projects_1" multiple>
+                                    {% for project in projects %}
+                                        <option value="{{project.id}}">{{project.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3 select-field ppl-field">
+                                <label for="sex" class="form-label">Пол</label>
+                                <select class="selectpicker sex field-input" data-width="100%" data-live-search="true" name="sex_1">
+                                    <option value="A">Любой</option>
+                                    <option value="М">Мужской</option>
+                                    <option value="F">Женский</option>
+                                </select>
+                            </div>
+                            <div class="form-floating mb-3 ppl-field">
+                                <input type="number" class="form-control age_limit_min" name="age_limit_min_1" min="0" max="100" placeholder="Минимальный возраст">
+                                <label for="name">Минимальный возраст</label>
+                            </div>
+                            <div class="form-floating mb-3 ppl-field">
+                                <input type="number" class="form-control age_limit_max" name="age_limit_max_1" min="0" max="100" placeholder="Максимальный возраст">
+                                <label for="name">Максимальный возраст</label>
+                            </div>
+                            <div class="mb-3 select-field ppl-field">
+                                <label for="disabilities" class="form-label">Типы ОВЗ</label>
+                                <select class="selectpicker disabilities field-input" data-width="100%" data-live-search="true" name="disabilities_1" multiple>
+                                    {% for disability in disabilities %}
+                                        <option value="{{disability.id}}">{{disability.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                        <div class="btn btn-outline-primary previous-field-btn">Назад</div>
+                        <div class="btn btn-primary next-field-btn">Вперёд</div>
+                        <div class="btn btn-outline-success add-field-btn">Добавить поле</div>
+                        <div class="btn btn-primary add-report-btn">Сохранить отчёт</div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header">
+        <h1>Отчёты</h1>
+        <a data-bs-toggle="modal" data-bs-target="#AddReportModal" class="btn btn-success">Добавить отчёт</a>
+    </div>
+    
+    <div class="reports-list row row-cols-3 row-cols-md-3 g-4">
+        {% for report in reports %}
+            <div class="modal fade generate-report-modal" id="GenerateReport{{report.id}}Modal" tabindex="-1" aria-labelledby="GenerateReportModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="GenerateReportModalLabel">Сформировать отчёт</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body generate-report-body">
+                            <form class="add-report-form" action="{% url 'generate_report' report.id %}" method="POST">
+                                {% for interval in report.intervals.all %}
+                                    <p>{{interval}}</p>
+                                    {% if interval.period == "MNTH" %}
+                                        {% if interval.interval_type == "GRWNG" %}
+                                            <div id="datepicker" class="input-group date monthpicker">
+                                                <input class="form-control" type="text" name="start_date_{{interval.id}}" placeholder="Начало периода" autocomplete="off" required/>
+                                                <span class="input-group-addon">
+                                                    <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                        <div id="datepicker" class="input-group date monthpicker">
+                                            <input class="form-control" type="text" name="end_date_{{interval.id}}" placeholder="Конец периода" autocomplete="off" required/>
+                                            <span class="input-group-addon">
+                                                <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                            </span>
+                                        </div>
+                                    {% elif interval.period == "YEAR" %}
+                                        {% if interval.interval_type == "GRWNG" %}
+                                            <div id="datepicker" class="input-group date yearpicker">
+                                                <input class="form-control" type="text" name="start_date_{{interval.id}}" placeholder="Начало периода" autocomplete="off" required/>
+                                                <span class="input-group-addon">
+                                                    <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                        <div id="datepicker" class="input-group date yearpicker">
+                                            <input class="form-control" type="text" name="end_date_{{interval.id}}" placeholder="Конец периода" autocomplete="off" required/>
+                                            <span class="input-group-addon">
+                                                <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                            </span>
+                                        </div>
+                                        {% elif interval.period == "QRTR" %}
+                                            {% if interval.interval_type == "GRWNG" %}
+                                                <div class="input-group date quarter">
+                                                    <input type="text" class="form-control" style="cursor: pointer" name="start_date_{{interval.id}}" placeholder="Начало периода" autocomplete="off" required/>
+                                                    <span class="input-group-addon">
+                                                        <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                            <div class="input-group date quarter">
+                                                <input type="text" class="form-control" style="cursor: pointer" name="end_date_{{interval.id}}" placeholder="Конец периода" autocomplete="off" required/>
+                                                <span class="input-group-addon">
+                                                    <img src="{% static 'reports/img/calendar-icon.svg' %}" alt="">
+                                                </span>
+                                            </div>
+                                        {% elif interval.period == "DTS" %}
+                                            {% if interval.interval_type == "GRWNG" %}
+                                                <div class="input-group mb-3">
+                                                    <input type="date" class="form-control" name="start_date_{{interval.id}}" placeholder="Начало периода" autocomplete="off" required>
+                                                </div>
+                                            {% endif %}
+                                            <div class="input-group mb-3">
+                                                <input type="date" class="form-control" name="end_date_{{interval.id}}" placeholder="Конец периода" autocomplete="off" required>
+                                            </div>
+                                    {% endif %}
+                                {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                                <button class="btn btn-primary add-report-btn">Сформировать отчёт</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card report-card h-100">
+                    <div class="card-header">
+                        {{report.name}}
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <b>Временные интервалы:</b>
+                            <ul>
+                                {% for interval in report.intervals.all %}
+                                    <li>{{interval}}</li>
+                                {% endfor %}
+                            </ul>
+                        </p>
+                        <p class="card-text">
+                            <b>Поля отчёта:</b>
+                            <ul>
+                                {% for field in report.fields.all %}
+                                    <li>{{field}}</li> 
+                                {% endfor %}
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a data-bs-toggle="modal" data-bs-target="#GenerateReport{{report.id}}Modal" class="btn btn-primary">Сформировать</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

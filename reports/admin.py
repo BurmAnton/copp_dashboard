@@ -26,7 +26,14 @@ class ReportFieldAdmin(admin.ModelAdmin):
         ('report', RelatedOnlyDropdownFilter)
     )
 
-    filter_horizontal = ("tags", "stop_tags")
+    filter_horizontal = (
+        "tags", 
+        "stop_tags", 
+        "competencies",
+        "disabilities",
+        "projects",
+        "event_types"
+    )
 
 
 @admin.register(Tag)
@@ -45,7 +52,6 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(TimeInterval)
 class TimeIntervalAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
         'report',
         'period',
         'interval_type'

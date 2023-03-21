@@ -100,6 +100,7 @@ class EducationProgram(models.Model):
     )
     program_type = models.CharField(max_length=5, choices=PROGRAM_TYPES, verbose_name='Тип программы', blank=True, null=True)
     duration = models.IntegerField("Длительность (ак. часов)", null=False, blank=False)
+    creation_date = models.DateField("Дата создания", null=False, blank=False)
     program_link =  models.CharField("Ссылка на программу", max_length=200, blank=True, null=True)
 
     class Meta:
@@ -165,7 +166,7 @@ class Group(models.Model):
     education_program = models.ForeignKey(EducationProgram, verbose_name="Программа обучения", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     project = models.ForeignKey(Project, verbose_name="Проект", on_delete=CASCADE, related_name='groups', blank=True, null=True)
     
-    citizens = models.ManyToManyField(Citizen, verbose_name="Участники", blank=True)
+    citizens = models.ManyToManyField(Citizen, verbose_name="Участники", related_name="groups", blank=True)
 
     start_date = models.DateField("Дата начала обучения", blank=True, null=True)
     end_date = models.DateField("Дата окончания обучения", blank=True, null=True)

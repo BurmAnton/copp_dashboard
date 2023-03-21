@@ -1,0 +1,99 @@
+.body
+    flex-direction: column
+    background-color: #F2F2F2
+.add-report-modal
+    .add-report-form
+        >div
+            display: none
+        .current-step
+            display: block
+    .add-report-btn, .next-field-btn, .previous-field-btn
+        display: none
+    .time-period-hdr
+        display: flex
+        justify-content: space-between
+        align-items: center
+        height: 60px
+        .delete-interval
+            display: none
+    .ppl-field, .program-field, .event-field, .common-field
+        display: none
+.header
+    display: inline-grid
+    grid-template-columns: 300px 360px 300px
+    justify-content: center
+    justify-items: center
+    align-items: center
+    margin: 15px auto
+    h1
+        grid-column-start: 2
+        text-align: center
+        margin: 15px auto
+    .btn
+        grid-column-start: 3
+        justify-self: end
+        margin-right: 6px
+
+.reports-list
+    margin: auto
+    margin-top: 0
+    margin-bottom: 35px
+    width: fit-content
+    justify-content: left
+    gap: 15px
+    width: 960px
+    .col
+        margin-top: 0 !important
+        width: 310px
+        padding-left: 0
+        padding-right: 0
+        .report-card
+            height: fit-content
+            min-height: 250px
+            border: 0
+            border-radius: 12px
+            box-shadow: 6px 6px 6px rgb(0 0 0 / 15%)
+            b
+                font-weight: 500
+            .card-header
+                font-size: 20px
+                background-color: white
+                text-align: center
+            .card-text
+                margin-top: 10px
+                margin-bottom: 5px
+            ul
+                padding-left: 1rem
+            .card-footer
+                display: flex
+                justify-content: flex-end
+                background-color: white
+                column-gap: 15px
+.input-group-addon
+    margin-left: 1px !important
+    width: 33px
+    display: flex
+    justify-content: center
+    background-color: #edf0ef
+    border: 1px solid
+    border-color: rgba(0, 0, 0, 0.2)
+    border-top-right-radius: 6px
+    border-bottom-right-radius: 6px
+    img
+        width: 15px
+.quarter .month 
+    width: 100% !important
+
+.generate-report-body
+    display: flex
+    flex-direction: column
+    gap: 10px
+    p
+        margin-bottom: 5px
+    .input-group
+        margin: 0 !important
+
+.add-report-form
+    gap: 10px
+    display: flex
+    flex-direction: column
