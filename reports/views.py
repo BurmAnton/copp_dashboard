@@ -59,7 +59,6 @@ def generate_report(request, report_id):
                 column += 1
             row += 1
         wb.template = False
-        wb.save(f'{report.name}.xlsx')
         response = HttpResponse(content=save_virtual_workbook(wb), 
                                 content_type='application/vnd.openxmlformats-\
                                 officedocument.spreadsheetml.sheet'
