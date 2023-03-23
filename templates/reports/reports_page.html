@@ -13,6 +13,187 @@
 {% endblock %}
 
 {% block body %}
+    {% for report in reports %}
+        <div class="modal fade edit-report-modal" id="EditReport{{report.id}}Modal" tabindex="-1" aria-labelledby="EditReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EditReportModalLabel">Изменить отчёт</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body generate-report-body">
+                        <form class="add-report-form" action="" method="POST">
+                            <input type="input" style="display: none;" class="form-control report-id" name="id" value="{{report.id}}">
+                            <input type="number" style="display: none;" class="form-control fields_count" name="fields_count" value="{{report.fields.all.count}}">
+                            <input type="number" style="display: none;" class="form-control periods_count" name="periods_count" value="{{report.intervals.all.count}}">
+                            <div class="intervals-step current-step">
+                                <div class="form-floating mb-3">
+                                    <input type="input" class="form-control report-name" name="name" placeholder="Название мероприятия" value="{{report.name}}" required>
+                                    <label for="name">Название отчёта</label>
+                                </div>
+                                <div class="time-periods">
+                                    {% for period in report.intervals.all %}
+                                        <div class="time-period">
+                                            <div class="mb-3">
+                                                <div class="time-period-hdr">
+                                                    <label for="event_type" class="form-label">Временной интервал №{{ forloop.counter }}</label>
+                                                    <div {% if forloop.counter != 1 %}style="display: block;"{% endif %} class="btn btn-sm btn-outline-danger delete-interval">Удалить</div>
+                                                </div>
+                                                <select class="selectpicker period-type" data-width="100%" data-live-search="true" name="period_type_{{ forloop.counter }}" required>
+                                                    <option value="{{period.period}}">{{period.get_period_display}}</option>
+                                                    {% for period_type in period_types %}
+                                                        {% if period.period != period_type.0 %}
+                                                            <option value="{{period_type.0}}">{{period_type.1}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="mb-3">
+                                                <select class="selectpicker interval-type" data-width="100%" data-live-search="true" name="interval_type_{{ forloop.counter }}" required>
+                                                    <option value="{{period.interval_type}}">{{period.get_interval_type_display}}</option>
+                                                    {% for interval_type in interval_types %}
+                                                        {% if period.interval_type != interval_type.0 %}
+                                                            <option value="{{interval_type.0}}">{{interval_type.1}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="btn btn-sm btn-outline-success add-interval">Добавить интервал</div>
+                            </div>
+                            {% for field in report.fields.all %}
+                                {% if forloop.counter == 1 %}
+                                    <div class="field-step next-step" data-field="{{forloop.counter}}">
+                                {% else %}
+                                    <div class="field-step" data-field="{{forloop.counter}}">
+                                {% endif %}
+                                    <div class="form-floating mb-3">
+                                        <input type="input" class="form-control field-name" name="field_name_{{forloop.counter}}" value="{{field.name}}" placeholder="Название поля" required>
+                                        <label for="name">Название поля</label>
+                                    </div>
+                                    <div class="mb-3 select-field">
+                                        <label for="event_type" class="form-label">Тип поля (что считать?)</label>
+                                        <select class="selectpicker field-type" title="Выберите тип поля" data-width="100%" data-live-search="true" name="field_type_{{forloop.counter}}" required>
+                                            <option selected value="{{field.field_type}}">{{field.get_field_type_display}}</option>
+                                            {% for field_type in field_types %}
+                                                {% if field.field_type != field_type.0 %}
+                                                    <option value="{{field_type.0}}">{{field_type.1}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field program-field">
+                                        <label for="competencies" class="form-label">Компетенции</label>
+                                        <select class="selectpicker competencies field-input" data-width="100%" data-live-search="true" name="competencies_{{forloop.counter}}" multiple>
+                                            {% for competence in competencies %}
+                                                {% if competence in field.competencies.all %}
+                                                    <option selected value="{{competence.id}}">{{competence.name}}</option>
+                                                {% else %}
+                                                    <option value="{{competence.id}}">{{competence.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field event-field">
+                                        <label for="event_type" class="form-label">Типы мероприятий</label>
+                                        <select class="selectpicker event-types field-input" data-width="100%" data-live-search="true" name="event_types_{{forloop.counter}}" multiple>
+                                            {% for event_type in event_types %}
+                                                {% if event_type in field.event_types.all %}
+                                                    <option selected value="{{event_type.id}}">{{event_type.name}}</option>
+                                                {% else %}
+                                                    <option value="{{event_type.id}}">{{event_type.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field common-field">
+                                        <label for="event_type" class="form-label">Теги</label>
+                                        <select class="selectpicker tags field-input" data-width="100%" data-live-search="true" name="tags_{{forloop.counter}}" multiple>
+                                            {% for tag in tags %}
+                                                {% if tag in field.tags.all %}
+                                                    <option selected value="{{tag.id}}">{{tag.name}}</option>
+                                                {% else %}
+                                                    <option value="{{tag.id}}">{{tag.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field common-field">
+                                        <label for="event_type" class="form-label">Стоп-теги</label>
+                                        <select class="selectpicker stop-tags field-input" data-width="100%" data-live-search="true" name="stop_tags_{{forloop.counter}}" multiple>
+                                            {% for tag in tags %}
+                                                {% if tag in field.stop_tags.all %}
+                                                    <option selected value="{{tag.id}}">{{tag.name}}</option>
+                                                {% else %}
+                                                    <option value="{{tag.id}}">{{tag.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field common-field">
+                                        <label for="projects" class="form-label">Проекты</label>
+                                        <select class="selectpicker projects field-input" data-width="100%" data-live-search="true" name="projects_{{forloop.counter}}" multiple>
+                                            {% for project in projects %}
+                                                {% if project in field.projects.all %}
+                                                    <option selected value="{{project.id}}">{{project.name}}</option>
+                                                {% else %}
+                                                    <option value="{{project.id}}">{{project.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 select-field ppl-field">
+                                        <label for="sex" class="form-label">Пол</label>
+                                        <select class="selectpicker sex field-input" data-width="100%" data-live-search="true" name="sex_{{forloop.counter}}">
+                                            {% if field.sex != None %}
+                                                <option value="{{field.sex}}">{{field.get_sex_display}}</option>
+                                            {% endif %}
+                                            <option value="A">Любой</option>
+                                            <option value="М">Мужской</option>
+                                            <option value="F">Женский</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-floating mb-3 ppl-field">
+                                        <input type="number" class="form-control field-input age_limit_min" name="age_limit_min_{{forloop.counter}}" min="0" max="100" value="{{field.age_limit_min}}" placeholder="Минимальный возраст">
+                                        <label for="name">Минимальный возраст</label>
+                                    </div>
+                                    <div class="form-floating mb-3 ppl-field">
+                                        <input type="number" class="form-control field-input age_limit_max" name="age_limit_max_{{forloop.counter}}" min="0" max="100" value="{{field.age_limit_max}}" placeholder="Максимальный возраст">
+                                        <label for="name">Максимальный возраст</label>
+                                    </div>
+                                    <div class="mb-3 select-field ppl-field">
+                                        <label for="disabilities" class="form-label">Типы ОВЗ</label>
+                                        <select class="selectpicker disabilities field-input" data-width="100%" data-live-search="true" name="disabilities_{{forloop.counter}}" multiple>
+                                            {% for disability in disabilities %}
+                                                {% if disability in field.disabilities.all %}
+                                                    <option selected value="{{disability.id}}">{{disability.name}}</option>>
+                                                {% else %}
+                                                    <option value="{{disability.id}}">{{disability.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="btn btn-sm btn-outline-danger delete-field">Удалить поле</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        </form>
+                    <div class="modal-footer">
+                        <form class="delete-report-form" action="{% url 'reports_page' %}" method="POST">
+                            <input type="input" style="display: none;" class="form-control report-id" name="id" value="{{report.id}}">
+                            <input type="submit" style="display: block;" class="btn btn-outline-danger delete-report-btn" name="delete-report"  value="Удалить">
+                        </form>
+                        <div class="btn btn-outline-primary previous-field-btn">Назад</div>
+                        <div class="btn btn-primary next-field-btn">Вперёд</div>
+                        <div class="btn btn-outline-success add-field-btn">Добавить поле</div>
+                        <div class="btn btn-primary edit-report-btn">Сохранить отчёт</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
     <div class="modal fade add-report-modal" id="AddReportModal" tabindex="-1" aria-labelledby="AddReportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -130,6 +311,7 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="btn btn-sm btn-outline-danger delete-field">Удалить поле</div>
                         </div>
                 </div>
                 <div class="modal-footer">
@@ -227,7 +409,10 @@
             <div class="col">
                 <div class="card report-card h-100">
                     <div class="card-header">
-                        {{report.name}}
+                        <div class="edit-icon" data-bs-toggle="modal" data-bs-target="#SchoolModal"> 
+                            {{report.name}}
+                            <img data-bs-toggle="modal" data-bs-target="#EditReport{{report.id}}Modal" src="{% static 'reports/img/edit-icon.svg' %}" alt="">
+                        </div>
                     </div>
                     <div class="card-body">
                         <p class="card-text">

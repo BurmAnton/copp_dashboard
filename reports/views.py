@@ -80,9 +80,9 @@ def get_end_date(end_date, interval):
         year = end_date.split(" ")[1]
         last_month_of_quarter = 3 * quarter
         end_date = date(
-                        year, 
+                        int(year), 
                         last_month_of_quarter, 
-                        monthrange(year, last_month_of_quarter)[1]
+                        monthrange(int(year), last_month_of_quarter)[1]
                     )
     elif interval.period == 'DTS':
         end_date = pd.to_datetime(end_date)
@@ -117,10 +117,10 @@ def count_filed_data(field, end_date, start_date=None):
             citizens.filter(disability_type__in=field.disabilities.all())
         if field.sex != 'A': citizens.filter(sex=field.sex)
         if field.age_limit_min != None:
-            age_limit_min = date.today()-relativedelta(years=age_limit_min)
+            age_limit_min = date.today()-relativedelta(years=field.age_limit_min)
             citizens.filter(birthday__gte=age_limit_min)
         if field.age_limit_max != None:
-            age_limit_max = date.today()-relativedelta(years=age_limit_max)
+            age_limit_max = date.today()-relativedelta(years=field.age_limit_max)
             citizens.filter(birthday__lte=age_limit_max)
     if field.field_type == 'PRGMPPL':
         groups = Group.objects.all()
@@ -174,58 +174,71 @@ def count_filed_data(field, end_date, start_date=None):
 @csrf_exempt
 def reports_page(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        name = data.get("name", "")
-        report = ReportTemplate(name=name)
-        report.save()
-        fields_count = int(data.get("fields_count", ""))
-        intervals_count = int(data.get("periods_count", ""))
-        for interval_number in range(intervals_count):
-            interval = TimeInterval(
-                report=report,
-                period=data.get(f'period_type_{interval_number + 1}'),
-                interval_type=data.get(f'interval_type_{interval_number + 1}')
-            )
-            interval.save()
-        for field_number in range(fields_count):
-            sex=data.get(f'sex_{field_number + 1}')
-            if sex[0] == "Любой": sex = 'A'
-            elif sex[0] == "Мужской": sex = 'M'
-            elif sex[0] == "Женский": sex = 'F'
-            field = ReportField(
-                item_number=field_number,
-                name=data.get(f'field_name_{field_number + 1}'),
-                field_type=data.get(f'field_type_{field_number + 1}'),
-                sex=sex,
-                report=report,
-            )
-            age_limit_min = data.get(f'age_limit_min_{field_number+1}')
-            age_limit_max = data.get(f'age_limit_max_{field_number+1}')
-            if age_limit_min is not None:
-                field.age_limit_min=int(age_limit_min)
-            if age_limit_max is not None:
-                field.age_limit_max=int(age_limit_max)
-            field.save()
-            field.tags.set(Tag.objects.filter(
-                    name__in=data.get(f'tags_{field_number + 1}')
+        if 'delete-report' in request.POST:
+            report_id = request.POST['id']
+            report = get_object_or_404(ReportTemplate, id=report_id)
+            report.delete()
+        else:
+            data = json.loads(request.body)
+            is_new = data.get("is_new", "")
+            name = data.get("name", "")
+            if is_new:
+                report = ReportTemplate(name=name)
+            else:
+                report_id = data.get("id", "")
+                report = get_object_or_404(ReportTemplate, id=report_id)
+                report.name = name
+                report.fields.all().delete()
+                report.intervals.all().delete()
+            report.save()
+            fields_count = int(data.get("fields_count", ""))
+            intervals_count = int(data.get("periods_count", ""))
+            for interval_number in range(intervals_count):
+                interval = TimeInterval(
+                    report=report,
+                    period=data.get(f'period_type_{interval_number + 1}'),
+                    interval_type=data.get(f'interval_type_{interval_number + 1}')
+                )
+                interval.save()
+            for field_number in range(fields_count):
+                sex=data.get(f'sex_{field_number + 1}')
+                if sex[0] == "Любой": sex = 'A'
+                elif sex[0] == "Мужской": sex = 'M'
+                elif sex[0] == "Женский": sex = 'F'
+                field = ReportField(
+                    item_number=field_number,
+                    name=data.get(f'field_name_{field_number + 1}'),
+                    field_type=data.get(f'field_type_{field_number + 1}'),
+                    sex=sex,
+                    report=report,
+                )
+                age_limit_min = data.get(f'age_limit_min_{field_number+1}')
+                age_limit_max = data.get(f'age_limit_max_{field_number+1}')
+                if age_limit_min != "" and age_limit_min is not None:
+                    field.age_limit_min=int(age_limit_min)
+                if age_limit_max != "" and age_limit_max is not None:
+                    field.age_limit_max=int(age_limit_max)
+                field.save()
+                field.tags.set(Tag.objects.filter(
+                        name__in=data.get(f'tags_{field_number + 1}')
+                    ))
+                field.stop_tags.set(Tag.objects.filter(
+                    name__in=data.get(f'stop_tags_{field_number + 1}')
                 ))
-            field.stop_tags.set(Tag.objects.filter(
-                name__in=data.get(f'stop_tags_{field_number + 1}')
-            ))
-            field.competencies.set(Competence.objects.filter(
-                name__in=data.get(f'competencies_{field_number + 1}')
-            ))
-            field.disabilities.set(DisabilityType.objects.filter(
-                name__in=data.get(f'disabilities_{field_number + 1}')
-            ))
-            field.projects.set(Project.objects.filter(
-                name__in=data.get(f'projects_{field_number + 1}')
-            ))
-            field.event_types.set(EventType.objects.filter(
-                name__in=data.get(f'event_types_{field_number + 1}')
-            ))
-            
-        return JsonResponse({"message": "OK"}, status=201)
+                field.competencies.set(Competence.objects.filter(
+                    name__in=data.get(f'competencies_{field_number + 1}')
+                ))
+                field.disabilities.set(DisabilityType.objects.filter(
+                    name__in=data.get(f'disabilities_{field_number + 1}')
+                ))
+                field.projects.set(Project.objects.filter(
+                    name__in=data.get(f'projects_{field_number + 1}')
+                ))
+                field.event_types.set(EventType.objects.filter(
+                    name__in=data.get(f'event_types_{field_number + 1}')
+                ))
+                field.save()
+            return JsonResponse({"message": "OK",}, status=201)
     reports = ReportTemplate.objects.all()
     message = None
     disabilities = DisabilityType.objects.all()
