@@ -90,6 +90,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 })
 
+function setStepName(modal) {
+    console.log(modal)
+    const current_step = modal.querySelector('.current-step')
+    if (current_step.classList.contains('field-step')) {
+        modal.querySelector('.stage-name').innerHTML = `Поля отчёта (${current_step.dataset.field}/${modal.querySelectorAll('.field-step').length})`
+    } else {
+        modal.querySelector('.stage-name').innerHTML = 'Временные интервалы'
+    }
+}
+
 function changeFieldType(step) {
     selectpicker = step.querySelector('.field-type select')
     step.querySelectorAll('.common-field').forEach(field =>{
@@ -221,6 +231,7 @@ function StepForward(btn) {
             }
         };
         changeFieldType(next_step)
+        setStepName(modal)
     }
 }
 
@@ -256,6 +267,7 @@ function StepBack(btn) {
     } else {
         modal.querySelector('.add-report-btn').disabled = false;
     }
+    setStepName(modal)
 }
 
 function AddField(btn) {
@@ -311,6 +323,7 @@ function AddField(btn) {
             }
         };
         modal.querySelector('.fields_count').value = parseInt(modal.querySelector('.fields_count').value) + 1
+        setStepName(modal)
     }
 }
 
