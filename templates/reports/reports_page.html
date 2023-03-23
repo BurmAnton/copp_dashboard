@@ -21,7 +21,12 @@
                         <h5 class="modal-title" id="EditReportModalLabel">Изменить отчёт</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body generate-report-body">
+                    <div class="modal-control">
+                        <button style="display: block" class="btn btn-outline-primary previous-field-btn btn-sm" disabled>Назад</button>
+                        <div class="stage-name"></div>
+                        <button class="btn btn-primary next-field-btn btn-sm">Вперёд</button>
+                    </div>
+                    <div class="modal-body">
                         <form class="add-report-form" action="" method="POST">
                             <input type="input" style="display: none;" class="form-control report-id" name="id" value="{{report.id}}">
                             <input type="number" style="display: none;" class="form-control fields_count" name="fields_count" value="{{report.fields.all.count}}">
@@ -185,10 +190,8 @@
                             <input type="input" style="display: none;" class="form-control report-id" name="id" value="{{report.id}}">
                             <input type="submit" style="display: block;" class="btn btn-outline-danger delete-report-btn" name="delete-report"  value="Удалить">
                         </form>
-                        <div class="btn btn-outline-primary previous-field-btn">Назад</div>
-                        <div class="btn btn-primary next-field-btn">Вперёд</div>
-                        <div class="btn btn-outline-success add-field-btn">Добавить поле</div>
-                        <div class="btn btn-primary edit-report-btn">Сохранить отчёт</div>
+                        <button class="btn btn-outline-success add-field-btn" disabled>Добавить поле</button>
+                        <button class="btn btn-primary edit-report-btn">Сохранить отчёт</button>
                     </div>
                 </div>
             </div>
@@ -200,6 +203,11 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="AddReportModalLabel">Добавить отчёт</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-control">
+                    <button style="display: block" class="btn btn-outline-primary previous-field-btn btn-sm" disabled>Назад</button>
+                    <div class="stage-name"></div>
+                    <button class="btn btn-primary next-field-btn btn-sm" disabled>Вперёд</button>
                 </div>
                 <div class="modal-body">
                     <form class="add-report-form" action="" method="">
@@ -234,7 +242,7 @@
                             </div>
                             <div class="btn btn-sm btn-outline-success add-interval">Добавить интервал</div>
                         </div>
-                        <div class="field-step" data-field="1">
+                        <div class="field-step next-step" data-field="1">
                             <div class="form-floating mb-3">
                                 <input type="input" class="form-control field-name" name="field_name_1" placeholder="Название поля" required>
                                 <label for="name">Название поля</label>
@@ -313,13 +321,11 @@
                             </div>
                             <div class="btn btn-sm btn-outline-danger delete-field">Удалить поле</div>
                         </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                        <div class="btn btn-outline-primary previous-field-btn">Назад</div>
-                        <div class="btn btn-primary next-field-btn">Вперёд</div>
-                        <div class="btn btn-outline-success add-field-btn">Добавить поле</div>
-                        <div class="btn btn-primary add-report-btn">Сохранить отчёт</div>
-                    </form>
+                    <button class="btn btn-outline-success add-field-btn">Добавить поле</button>
+                    <button class="btn btn-primary add-report-btn">Сохранить отчёт</button>
                 </div>
             </div>
         </div>

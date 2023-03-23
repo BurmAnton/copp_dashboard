@@ -2,6 +2,14 @@
     flex-direction: column
     background-color: #F2F2F2
 .add-report-modal, .edit-report-modal
+    .modal-control
+        display: grid
+        justify-content: space-between
+        grid-template-columns: auto 150px auto
+        padding: 0 15px
+        height: 50px
+        align-content: center
+        border-bottom: 1px solid #dee2e6
     .dropdown-toggle
         border: 1px solid #ced4da
         border-radius: 0.25rem
@@ -14,8 +22,6 @@
             display: none
         .current-step
             display: block
-    .add-report-btn, .next-field-btn, .previous-field-btn
-        display: none
     .time-period-hdr
         display: flex
         justify-content: space-between
@@ -28,8 +34,6 @@
 .edit-report-modal
     .next-field-btn
         display: block
-    .edit-report-btn, .add-field-btn
-        display: none
 .header
     display: inline-grid
     grid-template-columns: 300px 360px 300px

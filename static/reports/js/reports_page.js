@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.previous-field-btn').forEach(btn =>{
         btn.addEventListener('click', (btn) => {
             StepBack(btn);
-            btn.srcElement.parentElement.parentElement.querySelector('.next-field-btn').style.display = 'block';
+            btn.srcElement.parentElement.parentElement.querySelector('.next-field-btn').disabled = false;
         });
     })
     document.querySelectorAll('.next-field-btn').forEach(btn =>{
@@ -141,12 +141,12 @@ function deleteField(btn) {
     try {
         modal.querySelector(`[data-field="${parseInt(field.dataset.field) + 1}"]`).classList.add("next-step");
     } catch (error) {
-        modal.querySelector('.add-field-btn').style.display = 'block';
-        modal.querySelector('.next-field-btn').style.display = 'none';
+        modal.querySelector('.add-field-btn').disabled = true;
+        modal.querySelector('.next-field-btn').disabled = false;
         if (modal.parentElement.parentElement.classList.contains('edit-report-modal')) {
-            modal.querySelector('.edit-report-btn').style.display = 'block';
+            modal.querySelector('.edit-report-btn').disabled = true;
         } else {
-            modal.querySelector('.add-report-btn').style.display = 'block';
+            modal.querySelector('.add-report-btn').disabled = true;
         }
     }
     field.remove();
@@ -188,6 +188,7 @@ function checkStepValidity(current_step) {
 
 function StepForward(btn) {
     const modal = btn.srcElement.parentElement.parentElement;
+    console.log(modal)
     const previous_step = modal.querySelector('.previous-step');
     const current_step = modal.querySelector('.current-step');
     const next_step = modal.querySelector('.next-step');
@@ -208,15 +209,15 @@ function StepForward(btn) {
                 modal.querySelector(`[data-field="${parseInt(next_step.dataset.field) + 1}"]`).classList.add("next-step");
             }
         } else {
-            modal.querySelector('.next-field-btn').style.display = 'none';
-            modal.querySelector('.add-field-btn').style.display = 'block';
+            modal.querySelector('.next-field-btn').disabled = true;
+            modal.querySelector('.add-field-btn').disabled = false;
         }
-        modal.querySelector('.previous-field-btn').style.display = 'block';
+        modal.querySelector('.previous-field-btn').disabled = false;
         if (modal.querySelectorAll(`.next-step`).length === 0) {
             if (modal.parentElement.parentElement.classList.contains('edit-report-modal')) {
-                modal.querySelector('.edit-report-btn').style.display = 'block';
+                modal.querySelector('.edit-report-btn').disabled = false;
             } else {
-                modal.querySelector('.add-report-btn').style.display = 'block';
+                modal.querySelector('.add-report-btn').disabled = false;
             }
         };
         changeFieldType(next_step)
@@ -238,7 +239,7 @@ function StepBack(btn) {
     current_step.classList.add("next-step");
 
     if(previous_step.classList.contains('intervals-step')){
-        modal.querySelector('.previous-field-btn').style.display = 'none';
+        modal.querySelector('.previous-field-btn').disabled = true;
     } else {
         if (previous_step.dataset.field == '2') {
             modal.querySelector('[data-field="1"]').classList.add("previous-step");
@@ -249,11 +250,11 @@ function StepBack(btn) {
             previous_step.previousElementSibling.classList.add("previous-step");
         }
     }
-    modal.querySelector('.add-field-btn').style.display = 'none';
+    modal.querySelector('.add-field-btn').disabled = true;
     if (modal.parentElement.parentElement.classList.contains('edit-report-modal')) {
-        modal.querySelector('.edit-report-btn').style.display = 'none';
+        modal.querySelector('.edit-report-btn').disabled = false;
     } else {
-        modal.querySelector('.add-report-btn').style.display = 'none';
+        modal.querySelector('.add-report-btn').disabled = false;
     }
 }
 
@@ -301,12 +302,12 @@ function AddField(btn) {
                     input.lastElementChild.lastElementChild.remove();
                 })
         };
-        modal.querySelector('.previous-field-btn').style.display = 'block';
+        modal.querySelector('.previous-field-btn').disabled = false;
         if (modal.querySelectorAll(`.next-step`).length === 0) {
             if (modal.parentElement.parentElement.classList.contains('edit-report-modal')) {
-                modal.querySelector('.edit-report-btn').style.display = 'block';
+                modal.querySelector('.edit-report-btn').disabled = false;
             } else {
-                modal.querySelector('.add-report-btn').style.display = 'block';
+                modal.querySelector('.add-report-btn').disabled = false;
             }
         };
         modal.querySelector('.fields_count').value = parseInt(modal.querySelector('.fields_count').value) + 1
@@ -330,9 +331,7 @@ function AddTimePeriod(btn) {
         DeleteTimePeriod(btn);
     });
     periods.querySelector(`.time-periods`).appendChild(clone);
-    console.log(periods.parentElement.querySelector('.periods_count').value)
     periods.parentElement.querySelector('.periods_count').value = parseInt(periods.parentElement.querySelector('.periods_count').value) + 1
-    console.log(periods.parentElement.querySelector('.periods_count').value)
     $('.selectpicker.period-type').selectpicker('render');
     $('.selectpicker.interval-type').selectpicker('render');
     clone.querySelector('.bootstrap-select.period-type').lastElementChild.remove();
